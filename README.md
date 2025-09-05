@@ -109,6 +109,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 🤝 Contact
 
 - **Project Maintainer**: Muzamil Khan 
-- **Email**: mkmuzammil191@gmail.com  
+- **Contact no**: +92 3363506933  
 - **GitHub**: [Zaibten](https://github.com/Zaibten)
 
