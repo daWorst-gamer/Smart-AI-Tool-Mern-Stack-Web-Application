@@ -108,7 +108,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🤝 Contact
 
-- **Project Maintainer**: Your Name  
-- **Email**: your-email@example.com  
-- **GitHub**: [yourusername](https://github.com/yourusername)
+- **Project Maintainer**: Muzamil Khan 
+- **Email**: mkmuzammil191@gmail.com  
+- **GitHub**: [Zaibten](https://github.com/Zaibten)
 
