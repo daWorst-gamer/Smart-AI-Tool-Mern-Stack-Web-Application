@@ -294,10 +294,10 @@ body, html {
   padding: 2rem 0;
   flex-wrap: wrap;
 }
-.filter-buttons button {
+/* .filter-buttons button {
   margin-right: 0.8rem;
   padding: 0.8rem 1.5rem;
-  border: none;
+  border: 1px solid;
   border-radius: 9999px;
   font-size: 1.1rem;
   cursor: pointer;
@@ -308,9 +308,8 @@ body, html {
   color: white;
 }
 .filter-buttons button:not(.active) {
-  background: #f3f3f3;
   color: #333;
-}
+} */
 .filters select {
   padding: 0.8rem;
   border-radius: 6px;

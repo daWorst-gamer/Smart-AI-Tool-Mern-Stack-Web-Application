@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Homepage.css";
 import logo from "../assets/Final Logo-03.png";
-import { FaArrowUp } from "react-icons/fa";
+import { FaStar, FaGift, FaDollarSign, FaTimesCircle , FaArrowUp} from "react-icons/fa"
 
 
 function Homepage() {
@@ -64,7 +64,7 @@ const handleSubmit = (e) => {
   }
 };
   const [menuOpen, setMenuOpen] = useState(false);
-  const [active, setActive] = useState("featured");
+  const [active, setActive] = useState(""); 
   const rating = (Math.random() * (4.8 - 4) + 4).toFixed(1);
 
   const buttonStyle = (type, defaultColor, activeColor) => ({
@@ -273,31 +273,41 @@ const professions = [
 <section className="filters container">
   <div className="filter-buttons">
     <button
-      className={`filter-btn featured ${active === "featured" ? "active" : ""}`}
+      className={`filter-btn featured ${
+        active === "featured" ? "active" : active ? "disabled" : ""
+      }`}
       onClick={() => setActive("featured")}
     >
-      🏆 Featured Tools
+      <FaStar className="icon" />
+      Featured Tools
     </button>
 
     <button
-      className={`filter-btn free ${active === "free" ? "active" : ""}`}
+      className={`filter-btn free ${
+        active === "free" ? "active" : active ? "disabled" : ""
+      }`}
       onClick={() => setActive("free")}
     >
-      ✅ Free Tools
+      <FaGift className="icon" />
+      Free Tools
     </button>
 
     <button
-      className={`filter-btn paid ${active === "paid" ? "active" : ""}`}
+      className={`filter-btn paid ${
+        active === "paid" ? "active" : active ? "disabled" : ""
+      }`}
       onClick={() => setActive("paid")}
     >
-      💲 Paid Tools
+      <FaDollarSign className="icon" />
+      Paid Tools
     </button>
 
     <button
       className="filter-btn clear"
       onClick={() => setActive("")}
     >
-      ❌ Clear All
+      <FaTimesCircle className="icon" />
+      Clear All
     </button>
   </div>
 
@@ -305,56 +315,85 @@ const professions = [
     {`
       .filter-buttons {
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
         justify-content: center;
         flex-wrap: wrap;
+        margin: 2rem 0;
       }
 
       .filter-btn {
-        border: 2px solid black;
-        border-radius: 8px;
-        font-size: 1.4rem;
-        font-weight: 700;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.6rem;
+        font-weight: 600;
         cursor: pointer;
-        padding: 0.8rem 1.5rem;
+        padding: 1rem 2rem;
         transition: all 0.3s ease-in-out;
         color: black;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       }
 
-      /* Initial background colors */
-      .filter-btn.featured { background-color: #facc15; } /* Yellow */
-      .filter-btn.free { background-color: #bbf7d0; }     /* Light Green */
-      .filter-btn.paid { background-color: #e9d5ff; }     /* Light Purple */
-      .filter-btn.clear { background-color: #ef4444; color: white; } /* Red */
+      .filter-btn .icon {
+        margin-right: 0.5rem;
+        font-size: 1.4rem;
+      }
 
-      /* Active clicked state */
-      .filter-btn.active { 
-        background-color: #3b82f6; /* Primary Blue */
+      /* Default background colors */
+      .filter-btn.featured { background-color: #facc15; }
+      .filter-btn.free { background-color: #bbf7d0; }
+      .filter-btn.paid { background-color: #c69df3ff; }
+      .filter-btn.clear { background-color: #ef4444; color: white; }
+
+      /* Active state */
+      .filter-btn.active {
+        background-color: #3b82f6;
         color: white;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
       }
 
-      /* Hover effect */
-      .filter-btn:not(.clear):hover {
-        filter: brightness(0.9);
+      /* Disabled state */
+      .filter-btn.disabled {
+        background-color: #d1d5db; /* Grey */
+        color: #6b7280;
       }
 
-      /* Transition back to original when clearing */
-      .filter-btn:not(.active) {
-        transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+      /* Hover effects */
+      .filter-btn:not(.clear):hover:not(.disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 10px rgba(0,0,0,0.15);
       }
 
-      /* Clear all hover effect */
       .filter-btn.clear:hover { filter: brightness(0.9); }
 
-      @media (max-width: 768px) {
+      @media (max-width: 1024px) {
         .filter-btn {
+          font-size: 1.4rem;
+          padding: 0.9rem 1.8rem;
+        }
+        .filter-btn .icon {
+          font-size: 1.2rem;
+          margin-right: 0.4rem;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .filter-btn {
+          font-size: 1.2rem;
+          padding: 0.7rem 1.3rem;
+        }
+        .filter-btn .icon {
           font-size: 1rem;
-          padding: 0.5rem 1rem;
+          margin-right: 0.3rem;
         }
       }
     `}
   </style>
 </section>
+
+
+
 
 
 <div
