@@ -1,10 +1,28 @@
 import React, { useState, useEffect } from "react";
 import "./Homepage.css";
-import logo from "../assets/Final Logo-03.png"; // Update with your logo path
+import logo from "../assets/Final Logo-03.png";
+import { FaArrowUp } from "react-icons/fa";
+
 
 function Homepage() {
+  const [showScroll, setShowScroll] = useState(false);
+  useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setShowScroll(true);
+    } else {
+      setShowScroll(false);
+    }
+  };
 
-     // --- TIDIO CHAT INTEGRATION ---
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
@@ -252,60 +270,92 @@ const professions = [
 
       <div className="main" style={{ marginTop: "4rem" }}>
 {/* <div className="main"> */}
-{/* Filters */}
-
- <section
-      className="filters container"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "2rem 20px",
-        gap: "2rem",
-      }}
+<section className="filters container">
+  <div className="filter-buttons">
+    <button
+      className={`filter-btn featured ${active === "featured" ? "active" : ""}`}
+      onClick={() => setActive("featured")}
     >
-      {/* Buttons */}
-      <div
-        className="filter-buttons"
-        style={{ display: "flex", gap: "1rem", justifyContent: "center" }}
-      >
-        <button
-          onClick={() => setActive("featured")}
-          style={buttonStyle("featured", "#facc15", "#eab308")}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = "#eab308")}
-          onMouseLeave={(e) =>
-            (e.target.style.backgroundColor =
-              active === "featured" ? "#eab308" : "#facc15")
-          }
-        >
-          🏆 Featured Tools
-        </button>
+      🏆 Featured Tools
+    </button>
 
-        <button
-          onClick={() => setActive("free")}
-          style={buttonStyle("free", "#bbf7d0", "#86efac")}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = "#86efac")}
-          onMouseLeave={(e) =>
-            (e.target.style.backgroundColor =
-              active === "free" ? "#86efac" : "#bbf7d0")
-          }
-        >
-          ✅ Free Tools
-        </button>
+    <button
+      className={`filter-btn free ${active === "free" ? "active" : ""}`}
+      onClick={() => setActive("free")}
+    >
+      ✅ Free Tools
+    </button>
 
-        <button
-          onClick={() => setActive("paid")}
-          style={buttonStyle("paid", "#e9d5ff", "#d8b4fe")}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = "#d8b4fe")}
-          onMouseLeave={(e) =>
-            (e.target.style.backgroundColor =
-              active === "paid" ? "#d8b4fe" : "#e9d5ff")
-          }
-        >
-          💲 Paid Tools
-        </button>
-      </div>
-    </section>
+    <button
+      className={`filter-btn paid ${active === "paid" ? "active" : ""}`}
+      onClick={() => setActive("paid")}
+    >
+      💲 Paid Tools
+    </button>
+
+    <button
+      className="filter-btn clear"
+      onClick={() => setActive("")}
+    >
+      ❌ Clear All
+    </button>
+  </div>
+
+  <style>
+    {`
+      .filter-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        border: 2px solid black;
+        border-radius: 8px;
+        font-size: 1.4rem;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.3s ease-in-out;
+        color: black;
+      }
+
+      /* Initial background colors */
+      .filter-btn.featured { background-color: #facc15; } /* Yellow */
+      .filter-btn.free { background-color: #bbf7d0; }     /* Light Green */
+      .filter-btn.paid { background-color: #e9d5ff; }     /* Light Purple */
+      .filter-btn.clear { background-color: #ef4444; color: white; } /* Red */
+
+      /* Active clicked state */
+      .filter-btn.active { 
+        background-color: #3b82f6; /* Primary Blue */
+        color: white;
+      }
+
+      /* Hover effect */
+      .filter-btn:not(.clear):hover {
+        filter: brightness(0.9);
+      }
+
+      /* Transition back to original when clearing */
+      .filter-btn:not(.active) {
+        transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+      }
+
+      /* Clear all hover effect */
+      .filter-btn.clear:hover { filter: brightness(0.9); }
+
+      @media (max-width: 768px) {
+        .filter-btn {
+          font-size: 1rem;
+          padding: 0.5rem 1rem;
+        }
+      }
+    `}
+  </style>
+</section>
+
 
 <div
   className="headingclass"
@@ -965,7 +1015,39 @@ const professions = [
           © 2025 Select AI Tool Inc. All rights reserved.
         </p>
       </footer>
+
+      {showScroll && (
+<button
+  onClick={scrollToTop}
+  style={{
+    position: "fixed",
+    bottom: "12rem",
+    right: "2.5rem",
+    backgroundColor: "#4f46e5",
+    color: "#fff",
+    border: "none",
+    width: "50px",        // fixed width
+    height: "50px",       // fixed height
+    borderRadius: "50%",  // makes it a perfect circle
+    cursor: "pointer",
+    fontSize: "1.5rem",
+    display: "flex",      // center the icon
+    justifyContent: "center",
+    alignItems: "center",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+    transition: "transform 0.3s ease",
+    zIndex: 1000,
+  }}
+  onMouseEnter={(e) => (e.target.style.transform = "scale(1.2)")}
+  onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+>
+  <FaArrowUp />
+</button>
+
+)}
+
     </div>
+    
   );
 }
 
