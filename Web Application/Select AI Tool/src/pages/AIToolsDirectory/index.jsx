@@ -188,12 +188,15 @@ const scrollToTop = () => {
           {/* Center - Navigation Menu */}
           <div className="hidden lg:flex items-center gap-10">
             <div className="flex items-center gap-13">
-              <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
-                AI Tools
-              </button>
-              <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
-                Ebooks
-              </button>
+              <div className="flex space-x-8">
+  <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
+    AI Tools
+  </button>
+  <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
+    Ebooks
+  </button>
+</div>
+
             </div>
             <img src="/images/img_group_4.svg" alt="Logo" className="w-[54px] h-[54px]" />
             <div className="flex items-center gap-12">
