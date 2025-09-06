@@ -1,0 +1,14 @@
+@import './tailwind.css';
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&family=Public+Sans:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700;800&display=swap');
+
+body {
+  font-family: 'Public Sans', 'Lexend', 'Work Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #e5feff;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}

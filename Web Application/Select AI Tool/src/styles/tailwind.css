@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --primary-background: #0099ff;
+    --primary-foreground: #ffffff;
+    --primary-light: #3375f5;
+    --primary-dark: #162835;
+
+    /* Secondary Colors */
+    --secondary-background: #ffffff;
+    --secondary-foreground: #000000;
+    --secondary-light: #fafafa4c;
+    --secondary-dark: #333333;
+
+    /* Accent Colors */
+    --accent-yellow: #ffff2a;
+    --accent-yellow-light: #ffff7f;
+    --accent-green: #b9ffb9;
+    --accent-purple: #d6ccff;
+    --accent-blue: #a8fbff;
+    --accent-blue-light: #ddeffd;
+
+    /* Border Colors */
+    --border-primary: #000000;
+    --border-secondary: #b7b7b7;
+    --border-accent: #e5ac00;
+
+    /* Text Colors */
+    --text-primary: #000000;
+    --text-secondary: #0a0a0a;
+    --text-muted: #333333;
+    --text-muted-light: #33333399;
+    --text-muted-medium: #333333b2;
+    --text-disabled: #d1d5db;
+    --text-white: #ffffff;
+
+    /* Background Colors */
+    --bg-main: #ffffff;
+    --bg-overlay: #333333b2;
+    --bg-footer: #162835;
+
+    /* Typography Variables */
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+    --font-size-2xl: 22px;
+    --font-size-3xl: 24px;
+    --font-size-4xl: 32px;
+    --font-size-5xl: 48px;
+
+    /* Font Weight Variables */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    /* Line Height Variables */
+    --line-height-tight: 17px;
+    --line-height-snug: 19px;
+    --line-height-normal: 20px;
+    --line-height-relaxed: 22px;
+    --line-height-loose: 24px;
+    --line-height-xl: 30px;
+    --line-height-2xl: 40px;
+    --line-height-3xl: 60px;
+
+    /* Spacing Variables */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+    --spacing-2xl: 24px;
+    --spacing-3xl: 30px;
+    --spacing-4xl: 40px;
+    --spacing-5xl: 50px;
+    --spacing-6xl: 80px;
+    --spacing-7xl: 100px;
+    --spacing-8xl: 120px;
+
+    /* Border Radius Variables */
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 24px;
+    --radius-full: 40px;
+
+    /* Component-specific Colors */
+    --header-text: var(--text-white);
+    --header-bg: transparent;
+    --button-bg-primary: var(--primary-background);
+    --button-bg-secondary: var(--secondary-background);
+    --search-bg: var(--secondary-background);
+    --search-border: var(--border-primary);
+    --chip-bg-active: var(--accent-blue);
+    --chip-bg-inactive: var(--secondary-background);
+    --footer-bg: var(--bg-footer);
+  }
+}
