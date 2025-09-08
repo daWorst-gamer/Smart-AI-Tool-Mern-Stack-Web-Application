@@ -325,68 +325,77 @@ if (!tool) {
 
 
 {/* Featured Tools Section */}
-   <div className="flex flex-col gap-6 w-full">
-  <h3 className="font-semibold mb-4 text-xl">Featured Tools</h3>
-  {featuredTools.map((t) => {
-    const isFeatured = tool.featured; // current tool's featured status
-    return (
-      <div
-        key={t._id}
-        className={`bg-bg-secondary-background rounded-lg px-6 py-6 flex flex-col justify-between w-full border-2 ${
-          isFeatured ? "border-border-accent shadow-[3px_4px_1px_#e5ac00]" : "border-black shadow-none"
-        }`}
-      >
-        {/* Tool Header */}
-        <div className="flex items-start gap-4 mb-3">
-          <img
-            src={t.image_url || "/images/img_group_353.svg"}
-            alt={t.name}
-            className="w-16 h-16 flex-shrink-0 rounded"
-          />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2 mb-1.5">
-              <h3 className="text-lg font-bold text-text-primary font-['Public_Sans'] leading-tight">
-                {t.name}
-              </h3>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <img src="/images/img_vector_amber_a400.svg" alt="" className="w-2.5 h-2.5" />
-                <span className="text-sm font-medium text-text-muted font-['Public_Sans']">{t.rating}</span>
+{/* Featured / More Tools Section */}
+<div className="flex flex-col gap-6 w-full">
+  <h3 className="font-semibold mb-4 text-xl">
+    {tool.featured && featuredTools.length > 0 ? "Featured Tools" : "More Tools"}
+  </h3>
+
+  {featuredTools.length === 0 ? (
+    <p className="text-gray-500 text-sm">No tools to show.</p>
+  ) : (
+    featuredTools.map((t) => {
+      const isFeatured = tool.featured; // current tool's featured status
+      return (
+        <div
+          key={t._id}
+          className={`bg-bg-secondary-background rounded-lg px-6 py-6 flex flex-col justify-between w-full border-2 ${
+            isFeatured ? "border-border-accent shadow-[3px_4px_1px_#e5ac00]" : "border-black shadow-none"
+          }`}
+        >
+          {/* Tool Header */}
+          <div className="flex items-start gap-4 mb-3">
+            <img
+              src={t.image_url || "/images/img_group_353.svg"}
+              alt={t.name}
+              className="w-16 h-16 flex-shrink-0 rounded"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <h3 className="text-lg font-bold text-text-primary font-['Public_Sans'] leading-tight">
+                  {t.name}
+                </h3>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <img src="/images/img_vector_amber_a400.svg" alt="" className="w-2.5 h-2.5" />
+                  <span className="text-sm font-medium text-text-muted font-['Public_Sans']">{t.rating}</span>
+                </div>
+              </div>
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2">
+                {t.tags?.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-sm text-black bg-white border border-black rounded-full px-2 py-1 shadow-[1px_2px_1px_#000000]"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              {t.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-sm text-black bg-white border border-black rounded-full px-2 py-1 shadow-[1px_2px_1px_#000000]"
-                >
-                  {tag}
-                </span>
-              ))}
+          </div>
+
+          {/* Tool Description */}
+          <p className="text-sm text-text-muted font-['Public_Sans'] leading-normal mb-3">
+            {t.new_description || t.description}
+          </p>
+
+          {/* Tool Footer */}
+          <div className="flex items-center justify-between flex-wrap gap-2.5">
+            <div className="flex items-center gap-2 text-sm text-text-muted font-['Public_Sans']">
+              <span>{t.date}</span>
+              <div className="w-1.25 h-1.25 bg-text-mutedMedium rounded-sm"></div>
+              <span>{t.pricing?.toLowerCase() === "free" ? `100% ${t.pricing}` : t.pricing}</span>
             </div>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-md border-2 border-black shadow-[1px_2px_1px_#000000] text-sm font-medium hover:scale-105 transition-transform duration-150">
+              Visit Website
+            </button>
           </div>
         </div>
-
-        {/* Tool Description */}
-        <p className="text-sm text-text-muted font-['Public_Sans'] leading-normal mb-3">
-          {t.new_description || t.description}
-        </p>
-
-        {/* Tool Footer */}
-        <div className="flex items-center justify-between flex-wrap gap-2.5">
-          <div className="flex items-center gap-2 text-sm text-text-muted font-['Public_Sans']">
-            <span>{t.date}</span>
-            <div className="w-1.25 h-1.25 bg-text-mutedMedium rounded-sm"></div>
-            <span>{t.pricing?.toLowerCase() === "free" ? `100% ${t.pricing}` : t.pricing}</span>
-          </div>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md border-2 border-black shadow-[1px_2px_1px_#000000] text-sm font-medium hover:scale-105 transition-transform duration-150">
-            Visit Website
-          </button>
-        </div>
-      </div>
-    );
-  })}
+      );
+    })
+  )}
 </div>
+
 
   </aside>
 </main>
