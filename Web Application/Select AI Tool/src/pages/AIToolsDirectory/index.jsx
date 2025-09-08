@@ -385,24 +385,39 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
           <div className="hidden lg:flex items-center gap-10">
             <div className="flex items-center gap-13">
               <div className="flex space-x-8">
+
+              
+<Link to="/">
   <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
     AI Tools
   </button>
+  </Link>
+                
+<Link to="/ebook">
   <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
     Ebooks
   </button>
+  </Link>
 </div>
 
             </div>
 <Link to="/">
   <img src="/images/img_group_4.svg" alt="Logo" className="w-[54px] h-[54px]" />
 </Link>            <div className="flex items-center gap-12">
+              
+                            
+<Link to="/terms">
               <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
                 Terms
               </button>
+              </Link>
+
+                            
+<Link to="/policy">
               <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
                 Privacy Policy
               </button>
+              </Link>
             </div>
           </div>
 

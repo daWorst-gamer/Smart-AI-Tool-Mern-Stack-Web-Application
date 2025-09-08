@@ -43,12 +43,18 @@ export default function Header({
           {/* Center: Navigation + Logo */}
           <div className="hidden lg:flex items-center gap-12 justify-center flex-1">
             <div className="flex items-center gap-8">
+               <Link to="/">
               <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
                 AI Tools
               </button>
+               </Link>
+
+               <Link to="/ebook">
               <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
                 Ebooks
               </button>
+              
+</Link>
             </div>
 
             <Link to="/">
@@ -56,12 +62,20 @@ export default function Header({
             </Link>
 
             <div className="flex items-center gap-8">
+            
+<Link to="/terms">
               <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
                 Terms
               </button>
+
+              </Link>
+
+              <Link to="/policy">
               <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
                 Privacy Policy
               </button>
+              </Link>
+
             </div>
           </div>
 
