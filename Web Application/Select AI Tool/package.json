@@ -44,6 +44,7 @@
     "@dhiwise/component-tagger": "^1.0.10",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/typography": "^0.5.16",
+    "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "lucide-react": "^0.542.0",
     "prop-types": "^15.8.1",

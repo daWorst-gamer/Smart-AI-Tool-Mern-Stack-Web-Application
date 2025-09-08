@@ -4,14 +4,63 @@ import SearchView from '../../components/ui/SearchView';
 import Button from '../../components/ui/Button';
 import ChipView from '../../components/ui/ChipView';
 import {FaArrowUp} from "react-icons/fa"
-
-
+import axios from 'axios'; // add axios
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AIToolsDirectory = () => {
+  
+const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
 const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 const [formErrors, setFormErrors] = useState({});
 const [success, setSuccess] = useState(false);
+const [loading, setLoading] = useState(false);
+// Add state to track View More toggles
+const [showAllCategories, setShowAllCategories] = useState(false);
+const [showAllProfessions, setShowAllProfessions] = useState(false);
+
+const [visibleCount, setVisibleCount] = useState(9);
+const [selectedPricing, setSelectedPricing] = useState("");
+const [featured, setFeatured] = useState(false);
+
+const [searchQuery, setSearchQuery] = useState("");
+useEffect(() => {
+  const delayDebounceFn = setTimeout(() => {
+    fetchSearchResults();
+  }, 300); // 300ms delay
+
+  return () => clearTimeout(delayDebounceFn); // cleanup
+}, [searchQuery]);
+
+
+// Replace handleFilterClick with:
+const handleFilterClick = async (onlyFeatured = false) => {
+  setSelectedPricing(""); // reset other pricing filters if needed
+  setLoading(true);
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tools/filter`, {
+      categories: selectedCategories,
+      professions: selectedProfession,
+      featured: onlyFeatured ? true : undefined, // only send featured flag when needed
+    });
+    setAiTools(res.data);
+  } catch (err) {
+    console.error("Error fetching tools:", err);
+    setAiTools([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+// On page load, fetch all tools
+useEffect(() => {
+  handleFilterClick(false); // fetch all tools initially
+}, []);
+
+
+
 
 const handleInputChange = (e) => {
   setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -85,68 +134,211 @@ const scrollToTop = () => {
     { value: 1, label: "1+ Stars" },
   ];
 
-  const [selectedCategory, setSelectedCategory] = useState('Automation');
-  const [selectedProfession, setSelectedProfession] = useState(['Art & Illustration', 'Content Creation', 'Art', 'Entrepreneurship']);
+ const [selectedCategories, setSelectedCategories] = useState([]); // <-- empty to show all
+ const [selectedProfession, setSelectedProfession] = useState([]); // <-- empty to show all
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sortBy, setSortBy] = useState('Highest Rated');
   const [freeMode, setFreeMode] = useState(false); // <-- toggle state
-   const [activeFilter, setActiveFilter] = useState("Highest Rated");
+   const [activeFilter, setActiveFilter] = useState("Default");
   const [open, setOpen] = useState(false);
+const [originalTools, setOriginalTools] = useState([]); // <-- keep original order
+const filters = ["Default","Highest Rated", "A to Z", "Newest", "Free Tools"];
 
-  const filters = ["Highest Rated", "Newest", "Most Popular", "Free Tools"];
+const [categoryChips, setCategoryChips] = useState([]);
+const [professionChips, setProfessionChips] = useState([]);
 
-
-  // Category chips data
-  const categoryChips = [
-    { id: 'accessibility', label: 'Accessibility' },
-    { id: 'ai-development', label: 'AI Development' },
-    { id: 'astrology', label: 'Astrology' },
-    { id: 'advertising', label: 'Advertising' },
-    { id: 'audio', label: 'Audio' },
-    { id: 'augmented-reality', label: 'Augmented Reality' },
-    { id: 'automation', label: 'Automation' },
-    { id: 'billing-invoicing', label: 'Billing & Invoicing' },
-    { id: 'betting', label: 'Betting' },
-    { id: 'iot', label: 'IOT' },
-    { id: 'audio-music', label: 'Audio & Music' },
-    { id: 'advertising-2', label: 'Advertising' }
-  ];
-
-  const professionChips = [
-    { id: 'marketing', label: 'Marketing' },
-    { id: 'art-illustration', label: 'Art & Illustration' },
-    { id: 'content-creation', label: 'Content Creation' },
-    { id: 'design', label: 'Design' },
-    { id: 'art', label: 'Art' },
-    { id: 'education', label: 'Education' },
-    { id: 'marketing-2', label: 'Marketing' },
-    { id: 'education-2', label: 'Education' },
-    { id: 'entrepreneurship', label: 'Entrepreneurship' },
-    { id: 'data-science', label: 'Data Science' },
-    { id: 'iot-2', label: 'IOT' },
-    { id: 'journalism', label: 'Journalism' },
-    { id: 'engineering', label: 'Engineering' }
-  ];
+useEffect(() => {
+  const fetchFilters = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/filters`);
+      setCategoryChips(res.data.categories.map((c, i) => ({ id: i, label: c })));
+      setProfessionChips(res.data.professions.map((p, i) => ({ id: i, label: p })));
+    } catch (err) {
+      console.error("Error fetching filters:", err);
+    }
+  };
+  fetchFilters();
+}, []);
 
   // AI Tools data
-  const aiTools = Array.from({ length: 21 }, (_, index) => ({
-    id: index + 1,
-    name: 'PicPicAI - Image Enhancer',
-    rating: '4.7',
-    description: 'PicPicAI enhances portraits with AI, turning any image into a professional-quality photo.',
-    tags: ['Image Upscaling', 'Designers'],
-    date: 'July 26, 2025',
-    pricing: '100% Free',
-    featured: index === 0 || index === 5 || index === 8 || index === 14 || index === 17 || index === 20
-  }));
+const [aiTools, setAiTools] = useState([]);
 
-  const handleCategoryChipClick = (chipId) => {
-    setSelectedCategory(chipId);
+// useEffect(() => {
+//   const fetchTools = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tools/filter`, {
+//         categories: selectedCategories,
+//         professions: selectedProfession,
+//         pricing: selectedPricing, // Featured, Free, or Paid
+//       });
+//       setAiTools(res.data);
+//     } catch (err) {
+//       console.error("Error fetching AI Tools:", err);
+//       setAiTools([]);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+//   fetchTools();
+// }, [selectedCategories, selectedProfession, selectedPricing]);
+
+
+// When fetching tools, store original as well
+useEffect(() => {
+  const fetchFilteredTools = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tools/filter`, {
+        categories: selectedCategories,
+        professions: selectedProfession,
+        pricing: selectedPricing,
+      });
+
+      let tools = res.data.map(tool => ({
+        ...tool,
+        rating: parseFloat((Math.random() * (4.9 - 4.2) + 4.2).toFixed(1)),
+      }));
+
+      if (selectedRatings.length > 0) {
+        tools = tools.filter(tool =>
+          selectedRatings.some(rating => tool.rating >= rating)
+        );
+      }
+
+      setAiTools(tools);
+      setOriginalTools(tools);
+    } catch (err) {
+      console.error("Error fetching tools by rating:", err);
+      setAiTools([]);
+      setOriginalTools([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleProfessionChipClick = (chipId, chipData, newSelected) => {
-    setSelectedProfession(newSelected);
-  };
+  fetchFilteredTools();
+}, [selectedCategories, selectedProfession, selectedPricing, selectedRatings]);
+
+// Modify handleSortChange
+const handleSortChange = (filter) => {
+  setActiveFilter(filter);
+  setOpen(false);
+
+  let sortedTools = [...aiTools];
+
+  switch (filter) {
+    case "A to Z":
+      sortedTools.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    case "Newest":
+      sortedTools.sort((a, b) => new Date(b.date) - new Date(a.date));
+      break;
+    case "Free Tools":
+      sortedTools = sortedTools.filter(tool =>
+        tool.pricing?.toLowerCase().includes("free")
+      );
+      break;
+    case "Default":
+      sortedTools = [...originalTools]; // <-- restore original order
+      break;
+    case "Highest Rated":
+    default:
+      sortedTools.sort((a, b) => b.rating - a.rating);
+  }
+
+  setAiTools(sortedTools);
+};
+
+
+
+
+const handleCategoryChipClick = async (chipId, chipData, newSelected) => {
+  setSelectedCategories(newSelected);
+  setLoading(true);
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tools/filter`, {
+      categories: newSelected,
+      professions: selectedProfession
+    });
+    setAiTools(res.data);
+  } catch (err) {
+    console.error("Error fetching filtered tools:", err);
+    setAiTools([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleProfessionChipClick = async (chipId, chipData, newSelected) => {
+  setSelectedProfession(newSelected);
+  setLoading(true);
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tools/filter`, {
+      categories: selectedCategories,
+      professions: newSelected
+    });
+    setAiTools(res.data);
+  } catch (err) {
+    console.error("Error fetching filtered tools:", err);
+    setAiTools([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const fetchSearchResults = async () => {
+  if (!searchQuery) {
+    // Reset to filtered tools if search is empty
+    handleFilterClick(); // or fetch all
+    return;
+  }
+  setLoading(true);
+  try {
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/tools/search?q=${encodeURIComponent(searchQuery)}`
+    );
+    setAiTools(res.data);
+  } catch (err) {
+    console.error("Search error:", err);
+    setAiTools([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {chips.map((chip) => {
+        const isSelected = selectedChips.includes(chip.label);
+        return (
+          <button
+            key={chip.id}
+            className={`px-3 py-1 rounded-full border ${
+              isSelected ? "bg-blue-500 text-white" : "bg-white text-black"
+            }`}
+            onClick={() => {
+              let newSelected;
+              if (multiSelect) {
+                if (isSelected) newSelected = selectedChips.filter(c => c !== chip.label);
+                else newSelected = [...selectedChips, chip.label];
+              } else {
+                newSelected = [chip.label];
+              }
+              onChipClick(chip.id, chip, newSelected);
+            }}
+          >
+            {chip.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
 
   return (
     <>
@@ -171,18 +363,22 @@ const scrollToTop = () => {
             <span className="text-2xl font-medium text-white font-['Public_Sans']">
               Free mode
             </span>
-            <div
-              onClick={() => setFreeMode(!freeMode)}
-              className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${
-                freeMode ? "bg-green-500" : "bg-gray-300"
-              }`}
-            >
-              <div
-                className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                  freeMode ? "translate-x-6" : "translate-x-0.5"
-                }`}
-              ></div>
-            </div>
+           <div
+  onClick={() => {
+    setFreeMode(!freeMode);
+    setSelectedPricing(!freeMode ? "Free" : ""); // set "Free" when toggled on, reset when off
+  }}
+  className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${
+    freeMode ? "bg-green-500" : "bg-gray-300"
+  }`}
+>
+  <div
+    className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
+      freeMode ? "translate-x-6" : "translate-x-0.5"
+    }`}
+  ></div>
+</div>
+
           </div>
 
           {/* Center - Navigation Menu */}
@@ -198,8 +394,9 @@ const scrollToTop = () => {
 </div>
 
             </div>
-            <img src="/images/img_group_4.svg" alt="Logo" className="w-[54px] h-[54px]" />
-            <div className="flex items-center gap-12">
+<Link to="/">
+  <img src="/images/img_group_4.svg" alt="Logo" className="w-[54px] h-[54px]" />
+</Link>            <div className="flex items-center gap-12">
               <button className="text-2xl font-bold text-white font-['Lexend_Mega'] capitalize">
                 Terms
               </button>
@@ -440,18 +637,29 @@ const scrollToTop = () => {
         {/* Mobile Navigation Menu */}
         <div className={`${menuOpen ? "block" : "hidden"} lg:hidden bg-bg-primary-light p-4 rounded-lg mb-8`}>
           <div className="flex flex-col gap-4">
+            <Link to="/">
             <button className="text-xl font-bold text-white font-['Lexend_Mega'] capitalize text-left">
               AI Tools
             </button>
+            </Link>
+            
+            <Link to="/ebook">
             <button className="text-xl font-bold text-white font-['Lexend_Mega'] capitalize text-left">
               Ebooks
             </button>
+            </Link>
+
+            <Link to="/terms">
             <button className="text-xl font-bold text-white font-['Lexend_Mega'] capitalize text-left">
               Terms
             </button>
+            </Link>
+
+            <Link to="/policy">
             <button className="text-xl font-bold text-white font-['Lexend_Mega'] capitalize text-left">
               Privacy Policy
             </button>
+            </Link>
             <Button
               text="Email Us"
               text_font_size="18"
@@ -496,81 +704,83 @@ const scrollToTop = () => {
       <div className="relative -mb-5">
         <div className="max-w-4xl mx-auto px-4">
           <SearchView
-            placeholder="Search 30000+ AI Tools..."
-            text_font_size="20"
-            text_color="#333333b2"
-            fill_background_color="#ffffff"
-            border_border="3px solid #000000"
-            border_border_radius="40px"
-            effect_box_shadow="4px 5px 1px #000000"
-            padding="22px 92px 22px 92px"
-            className="relative"
-          />
+  placeholder="Search 30000+ AI Tools..."
+  text_font_size="20"
+  text_color="#333333b2"
+  fill_background_color="#ffffff"
+  border_border="3px solid #000000"
+  border_border_radius="40px"
+  effect_box_shadow="4px 5px 1px #000000"
+  padding="22px 92px 22px 92px"
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+/>
+
         </div>
       </div>
     </header>
 
-        {/* Filter Buttons */}
-        <section className="py-10">
-          <div className="max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
-              <Button
-                text="Featured Tools"
-                text_font_size="20"
-                text_color="#000000"
-                fill_background_color="#ffff7f"
-                border_border="2px solid #000000"
-                border_border_radius="4px"
-                effect_box_shadow="1px 3px 1px #000000"
-                padding="12px 22px 12px 46px"
-                layout_width="auto"
-                position="relative"
-                layout_gap="8px"
-                margin="0"
-                variant="primary"
-                size="medium"
-                onClick={() => {}}
-                className="flex items-center gap-2"
-              />
-              <Button
-                text="Free Tools"
-                text_font_size="20"
-                text_color="#000000"
-                fill_background_color="#b9ffb9"
-                border_border="2px solid #000000"
-                border_border_radius="4px"
-                effect_box_shadow="1px 3px 1px #000000"
-                padding="12px 24px 12px 50px"
-                layout_width="auto"
-                position="relative"
-                layout_gap="8px"
-                margin="0"
-                variant="primary"
-                size="medium"
-                onClick={() => {}}
-                className="flex items-center gap-2"
-              />
-              <Button
-                text="Paid Tools"
-                text_font_size="20"
-                text_color="#000000"
-                fill_background_color="#d6ccff"
-                border_border="2px solid #000000"
-                border_border_radius="4px"
-                effect_box_shadow="1px 3px 1px #000000"
-                padding="12px 24px 12px 42px"
-                layout_width="auto"
-                position="relative"
-                layout_gap="8px"
-                margin="0"
-                variant="primary"
-                size="medium"
-                onClick={() => {}}
-                className="flex items-center gap-2"
-              />
-            </div>
-          </div>
-        </section>
+{/* Filter Buttons */}
+<section className="py-10">
+  <div className="max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+      <Button
+        text="Featured Tools"
+        text_font_size="20"
+        text_color="#000000"
+        fill_background_color="#ffff7f"
+        border_border="2px solid #000000"
+        border_border_radius="4px"
+        effect_box_shadow="1px 3px 1px #000000"
+        padding="12px 22px 12px 46px"
+        layout_width="auto"
+        position="relative"
+        layout_gap="8px"
+        margin="0"
+        variant="primary"
+        size="medium"
+onClick={() => handleFilterClick(true)} // <-- pass true to filter featured        className="flex items-center gap-2"
+      />
+      <Button
+        text="Free Tools"
+        text_font_size="20"
+        text_color="#000000"
+        fill_background_color="#b9ffb9"
+        border_border="2px solid #000000"
+        border_border_radius="4px"
+        effect_box_shadow="1px 3px 1px #000000"
+        padding="12px 24px 12px 50px"
+        layout_width="auto"
+        position="relative"
+        layout_gap="8px"
+        margin="0"
+        variant="primary"
+        size="medium"
+        onClick={() => setSelectedPricing("Free")}
+        className="flex items-center gap-2"
+      />
+      <Button
+        text="Paid Tools"
+        text_font_size="20"
+        text_color="#000000"
+        fill_background_color="#d6ccff"
+        border_border="2px solid #000000"
+        border_border_radius="4px"
+        effect_box_shadow="1px 3px 1px #000000"
+        padding="12px 24px 12px 42px"
+        layout_width="auto"
+        position="relative"
+        layout_gap="8px"
+        margin="0"
+        variant="primary"
+        size="medium"
+        onClick={() => setSelectedPricing("Paid")}
+        className="flex items-center gap-2"
+      />
+    </div>
+  </div>
+</section>
+
 
         {/* Main Content */}
         <section className="pb-32">
@@ -579,51 +789,72 @@ const scrollToTop = () => {
               {/* Sidebar Filters */}
               <aside className="w-full lg:w-[22%] lg:mt-1.5">
                 <div className="bg-transparent">
-                  {/* Filters Header */}
-                  <div className="flex items-center mb-7">
-                    <img src="/images/img_group.svg" alt="" className="w-6 h-6" />
-                    <h2 className="text-2xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize ml-1.5">Filters</h2>
-                  </div>
+            {/* Filters Header */}
+<div className="flex items-center mb-7">
+  <img src="/images/img_group.svg" alt="" className="w-6 h-6" />
+  <h2 className="text-2xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize ml-1.5">
+    Filters
+  </h2>
+</div>
 
-                  {/* Category Section */}
-                  <div className="mb-8">
-                    <h3 className="text-xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize mb-5">Category</h3>
-                    <ChipView
-                      chips={categoryChips}
-                      selectedChips={[selectedCategory]}
-                      onChipClick={handleCategoryChipClick}
-                      multiSelect={false}
-                      layout_width="100%"
-                      margin="0"
-                      position="relative"
-                      variant="default"
-                      size="medium"
-                      className="flex flex-wrap gap-2"
-                    />
-                    <button className="text-lg font-semibold text-text-primary font-['Public_Sans'] underline mt-5 ml-auto block">
-                      View More
-                    </button>
-                  </div>
+{/* Clear Filters */}
+<button
+  onClick={() => {
+    setSelectedCategories([]);
+    setSelectedProfession([]);
+    setSelectedRatings([]);
+    // optional: force ChipView to re-render
+    setCategoryChips((prev) => [...prev]); 
+    setProfessionChips((prev) => [...prev]);
+  }}
+  className="text-lg font-semibold text-red-500 font-['Public_Sans'] underline mb-6"
+>
+  Clear Filters
+</button>
 
-                  {/* Profession Section */}
-                  <div className="mb-8">
-                    <h3 className="text-xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize mb-5.5">Profession</h3>
-                    <ChipView
-                      chips={professionChips}
-                      selectedChips={selectedProfession}
-                      onChipClick={handleProfessionChipClick}
-                      multiSelect={true}
-                      layout_width="100%"
-                      margin="0"
-                      position="relative"
-                      variant="default"
-                      size="medium"
-                      className="flex flex-wrap gap-2"
-                    />
-                    <button className="text-lg font-semibold text-text-primary font-['Public_Sans'] underline mt-5 ml-auto block">
-                      View More
-                    </button>
-                  </div>
+
+{/* Category Section */}
+<div className="mb-8">
+  <h3 className="text-xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize mb-5">Category</h3>
+  <ChipView
+    key={selectedCategories.join(",")}
+    chips={showAllCategories ? categoryChips : categoryChips.slice(0, 10)}
+    selectedChips={selectedCategories}
+    onChipClick={handleCategoryChipClick}
+    multiSelect={true}
+    className="flex flex-wrap gap-2"
+  />
+  {categoryChips.length > 10 && (
+    <button
+      className="text-lg font-semibold text-text-primary font-['Public_Sans'] underline mt-5 ml-auto block"
+      onClick={() => setShowAllCategories(!showAllCategories)}
+    >
+      {showAllCategories ? "View Less" : "View More"}
+    </button>
+  )}
+</div>
+
+{/* Profession Section */}
+<div className="mb-8">
+  <h3 className="text-xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize mb-5.5">Profession</h3>
+  <ChipView
+    key={selectedProfession.join(",")}
+    chips={showAllProfessions ? professionChips : professionChips.slice(0, 10)}
+    selectedChips={selectedProfession}
+    onChipClick={handleProfessionChipClick}
+    multiSelect={true}
+    className="flex flex-wrap gap-2"
+  />
+  {professionChips.length > 10 && (
+    <button
+      className="text-lg font-semibold text-text-primary font-['Public_Sans'] underline mt-5 ml-auto block"
+      onClick={() => setShowAllProfessions(!showAllProfessions)}
+    >
+      {showAllProfessions ? "View Less" : "View More"}
+    </button>
+  )}
+</div>
+
 
                   {/* Ratings Section */}
                 <div>
@@ -692,152 +923,200 @@ const scrollToTop = () => {
   <h2 className="text-4xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize">
     AI Tools
   </h2>
-  <span className="text-xl font-semibold text-text-mutedLight font-['Public_Sans']">
-    63 Tools Found
+ <span className="text-xl font-semibold text-text-mutedLight font-['Public_Sans']">
+    {aiTools.length} Tools Found
   </span>
 </div>
 </div>
-                   <div className="flex items-center gap-10 relative">
-      <span className="text-lg font-semibold text-text-primary font-['Public_Sans']">
-        Sort By:
-      </span>
+ <div className="flex items-center gap-10 relative">
+  <span className="text-lg font-semibold text-text-primary font-['Public_Sans']">
+    Sort By:
+  </span>
 
-      {/* Main Filter Button */}
-      <button
-        onClick={() => setOpen(!open)}
-        className="px-6 py-3 bg-white border-2 border-black rounded-2xl shadow-[1px_3px_1px_#000000] text-lg font-semibold flex items-center gap-2"
-      >
-        {activeFilter}
-        <span className="text-gray-500">▼</span>
-      </button>
+  {/* Main Filter Button */}
+  <button
+    onClick={() => setOpen(!open)}
+    className="px-6 py-3 bg-white border-2 border-black rounded-2xl shadow-[1px_3px_1px_#000000] text-lg font-semibold flex items-center gap-2"
+  >
+    {activeFilter}
+    <span className="text-gray-500">▼</span>
+  </button>
 
-      {/* Dropdown Menu */}
-      {open && (
-        <div className="absolute top-full left-[90px] mt-2 w-56 bg-white border-2 border-black rounded-xl shadow-lg z-50">
-          {filters.map((filter) => (
-            <div
-              key={filter}
-              onClick={() => {
-                setActiveFilter(filter);
-                setOpen(false);
-              }}
-              className={`px-4 py-2 cursor-pointer hover:bg-gray-100 font-['Public_Sans'] ${
-                activeFilter === filter ? "bg-blue-100 font-bold" : ""
-              }`}
-            >
-              {filter}
-            </div>
-          ))}
+  {/* Dropdown Menu */}
+  {open && (
+    <div className="absolute top-full mt-2 w-56 max-w-full bg-white border-2 border-black rounded-xl shadow-lg z-50 right-0 sm:left-0 sm:right-auto overflow-auto">
+      {filters.map((filter) => (
+        <div
+          key={filter}
+          onClick={() => handleSortChange(filter)}
+          className={`px-4 py-2 cursor-pointer hover:bg-gray-100 font-['Public_Sans'] ${
+            activeFilter === filter ? "bg-blue-100 font-bold" : ""
+          }`}
+        >
+          {filter}
         </div>
-      )}
+      ))}
     </div>
+  )}
+</div>
+
                   </div>
                 </div>
 
-                {/* Tools Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-20">
-                  {aiTools?.map((tool) => (
-                    <div
-                      key={tool?.id}
-                      className={`bg-bg-secondary-background border-2 ${
-                        tool?.featured ? 'border-border-accent shadow-[3px_4px_1px_#e5ac00]' : 'border-border-primary shadow-[3px_4px_1px_#000000]'
-                      } rounded-md px-6 py-8`}
-                    >
-                      {/* Tool Header */}
-                      <div className="flex items-start gap-3 mb-3">
-                        <img src="/images/img_group_353.svg" alt={tool?.name} className="w-[70px] h-[70px] flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2 mb-1.5">
-                            <h3 className="text-lg font-bold text-text-primary font-['Public_Sans'] leading-tight">
-                              {tool?.name}
-                            </h3>
-                            <div className="flex items-center gap-1 flex-shrink-0">
-                              <img src="/images/img_vector_amber_a400.svg" alt="" className="w-2.5 h-2.5" />
-                              <span className="text-sm font-medium text-text-muted font-['Public_Sans']">{tool?.rating}</span>
-                            </div>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {tool?.tags?.map((tag, index) => (
-                              <Button
-                                key={index}
-                                text={tag}
-                                text_font_size="14"
-                                text_color="#000000"
-                                fill_background_color="#ffffff"
-                                border_border="1px solid #000000"
-                                border_border_radius="14px"
-                                effect_box_shadow="1px 2px 1px #000000"
-                                padding="4px 14px"
-                                layout_width="auto"
-                                position="relative"
-                                layout_gap="4px"
-                                margin="0"
-                                variant="secondary"
-                                size="small"
-                                onClick={() => {}}
-                                className="text-sm"
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+{/* Tools Grid */}
+<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-20">
+  {loading ? (
+    <div className="col-span-full flex flex-col justify-center items-center py-20">
+      <svg
+        className="animate-spin h-16 w-16 text-blue-500"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path>
+      </svg>
+      <span className="mt-4 text-xl font-semibold text-text-primary">Loading tools...</span>
+    </div>
+  ) : aiTools.length === 0 ? (
+    <div className="col-span-full flex flex-col justify-center items-center py-20">
+      <span className="text-2xl font-semibold text-red-600 mb-2">No Tools Found</span>
+      <p className="text-gray-500 text-center max-w-xs">
+        Sorry, we couldn’t find any tools matching your filters. Try adjusting your search or filters.
+      </p>
+    </div>
+  ) : (
+    aiTools.slice(0, visibleCount).map((tool) => (
+      <div
+        key={tool?.id}
+        className={`bg-bg-secondary-background border-2 ${
+          tool?.featured
+            ? 'border-border-accent shadow-[3px_4px_1px_#e5ac00]'
+            : 'border-border-primary shadow-[3px_4px_1px_#000000]'
+        } rounded-md px-6 py-8 cursor-pointer`}
+       onClick={() => navigate(`/tools/${tool._id}`)} // Use _id from MongoDB
+      >
+        {/* Tool Header */}
+        <div className="flex items-start gap-3 mb-3">
+          {tool.image_url && (
+            <img
+              src={tool.image_url}
+              alt={tool.name}
+              className="w-[70px] h-[70px] flex-shrink-0 rounded-lg"
+            />
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-1.5">
+              <h3 className="text-lg font-bold text-text-primary font-['Public_Sans'] leading-tight">
+                {tool?.name}
+              </h3>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <img src="/images/img_vector_amber_a400.svg" alt="" className="w-2.5 h-2.5" />
+                <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
+                  {tool?.rating}
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {tool.profession?.map((prof, i) => (
+                <Button
+                  key={i}
+                  text={prof}
+                  text_font_size="14"
+                  text_color="#000000"
+                  fill_background_color="#ffffff"
+                  border_border="1px solid #000000"
+                  border_border_radius="14px"
+                  effect_box_shadow="1px 2px 1px #000000"
+                  padding="4px 14px"
+                  layout_width="auto"
+                  position="relative"
+                  layout_gap="4px"
+                  margin="0"
+                  variant="secondary"
+                  size="small"
+                  onClick={() => {}}
+                  className="text-sm"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
-                      {/* Tool Description */}
-                      <p className="text-base font-medium text-text-muted font-['Public_Sans'] leading-normal mb-3">
-                        {tool?.description}
-                      </p>
+        {/* Tool Description */}
+        <p className="text-base font-medium text-text-muted font-['Public_Sans'] leading-normal mb-3">
+          {tool.new_description || tool.description}
+        </p>
 
-                      {/* Tool Footer */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-sm font-medium text-text-muted font-['Public_Sans']">{tool?.date}</span>
-                          <div className="w-1.25 h-1.25 bg-text-mutedMedium rounded-sm"></div>
-                          <span className="text-sm font-medium text-text-muted font-['Public_Sans']">{tool?.pricing}</span>
-                        </div>
-                        <Button
-  text="Visit Website"
-  text_font_size="14"
-  text_color="#ffffff"
-  fill_background_color="#0099ff"
-  border_border="2px solid #000000"
-  border_border_radius="6px"
-  effect_box_shadow="1px 2px 1px #000000"
-  padding="6px 20px"   // more breathing room
-  layout_width="auto"
-  position="relative"
-  layout_gap="0"
-  margin="0"
-  variant="primary"
-  size="small"
-  onClick={() => {}}
-  className="whitespace-nowrap leading-none"   // <-- forces single line
-/>
+        {/* Tool Footer */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
+              {tool?.date}
+            </span>
+            <div className="w-1.25 h-1.25 bg-text-mutedMedium rounded-sm"></div>
+            <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
+              {tool?.pricing?.toLowerCase().includes("free") ? "100% Free" : tool?.pricing}
+            </span>
+          </div>
 
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          <Button
+            text="Visit Website"
+            text_font_size="14"
+            text_color="#ffffff"
+            fill_background_color="#0099ff"
+            border_border="2px solid #000000"
+            border_border_radius="6px"
+            effect_box_shadow="1px 2px 1px #000000"
+            padding="6px 20px"
+            layout_width="auto"
+            position="relative"
+            layout_gap="0"
+            margin="0"
+            variant="primary"
+            size="small"
+            onClick={() => {
+              window.open(tool?.link || tool?.official_link, "_blank", "noopener,noreferrer");
+              fetch(`${import.meta.env.VITE_API_URL}/api/tools/${tool._id}/visit`, {
+                method: "POST",
+              }).catch((err) => console.error("Error logging visit:", err));
+            }}
+            className="whitespace-nowrap leading-none"
+          />
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
+
 
                 {/* Load More Button */}
-                <div className="text-center">
-                  <Button
-                    text="Load More Tools"
-                    text_font_size="24"
-                    text_color="#ffffff"
-                    fill_background_color="#0099ff"
-                    border_border="2px solid #000000"
-                    border_border_radius="4px"
-                    effect_box_shadow="3px 4px 1px #000000"
-                    padding="12px 30px"
-                    layout_width="auto"
-                    position="relative"
-                    layout_gap="8px"
-                    margin="0"
-                    variant="primary"
-                    size="large"
-                    onClick={() => {}}
-                  />
-                </div>
+                {visibleCount < aiTools.length && (
+  <div className="text-center">
+    <Button
+      text="Load More Tools"
+      text_font_size="24"
+      text_color="#ffffff"
+      fill_background_color="#0099ff"
+      border_border="2px solid #000000"
+      border_border_radius="4px"
+      effect_box_shadow="3px 4px 1px #000000"
+      padding="12px 30px"
+      layout_width="auto"
+      position="relative"
+      layout_gap="8px"
+      margin="0"
+      variant="primary"
+      size="large"
+      onClick={() => setVisibleCount((prev) => prev + 20)}
+    />
+  </div>
+)}
               </div>
             </div>
           </div>
@@ -847,21 +1126,33 @@ const scrollToTop = () => {
         <footer className="bg-bg-primary-dark py-6 sm:py-12 lg:py-16" style={{ backgroundColor: "#172936"}}>
           <div className="max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-12 mb-8">
-              {/* Logo and Social Links */}
-              <div className="flex flex-col items-center lg:items-start gap-7.5 w-full lg:w-auto">
-                <img src="/images/img_footer_logo.png" alt="Select AI Tool" className="w-[236px] h-[130px]" />
-                <div className="flex items-center gap-5">
-                  <div className="p-1.5">
-                    <img src="/images/img_facebook_176.svg" alt="Facebook" className="w-3 h-6" />
-                  </div>
-                  <img src="/images/img_instagram_167.svg" alt="Instagram" className="w-6 h-6" />
-                  <img src="/images/img_tiktok_fill_svgrepo_com.svg" alt="TikTok" className="w-6 h-6" />
-                  <img src="/images/img_pinterest_svgrepo_com.svg" alt="Pinterest" className="w-6 h-6" />
-                  <div className="py-0.5">
-                    <img src="/images/img_youtube_168.svg" alt="YouTube" className="w-6 h-4" />
-                  </div>
-                </div>
-              </div>
+         {/* Logo and Social Links */}
+<div className="flex flex-col items-center lg:items-start gap-7.5 w-full lg:w-auto">
+  <img src="/images/img_footer_logo.png" alt="Select AI Tool" className="w-[236px] h-[130px]" />
+  
+  <div className="flex items-center gap-5 mt-3"> {/* Added mt-3 for top margin */}
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_facebook_176.svg" alt="Facebook" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_instagram_167.svg" alt="Instagram" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_tiktok_fill_svgrepo_com.svg" alt="TikTok" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_pinterest_svgrepo_com.svg" alt="Pinterest" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_youtube_168.svg" alt="YouTube" className="w-6 h-6" />
+    </a>
+  </div>
+</div>
+
 
               {/* Footer Links */}
               <div className="flex flex-col sm:flex-row justify-between w-full lg:w-auto gap-8 sm:gap-16 lg:gap-24">
