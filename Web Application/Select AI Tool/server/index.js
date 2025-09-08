@@ -9,14 +9,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Enable CORS for frontend (Vite default is 5173, but check your running port)
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL, // fetch from .env
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+// Allow requests only from your frontend
+app.use(cors({
+    origin: 'https://smartaitools.vercel.app', // your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 app.use(express.json());

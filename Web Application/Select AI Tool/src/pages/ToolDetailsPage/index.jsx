@@ -171,7 +171,7 @@ if (!tool) {
           <div>
             <p className="text-sm text-gray-600">
   <Link
-    to="/tools"
+    to="/"
     className="text-blue-500 hover:underline font-medium"
   >
     All Tools
