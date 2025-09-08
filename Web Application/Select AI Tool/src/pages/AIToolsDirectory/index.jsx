@@ -366,7 +366,7 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
            <div
   onClick={() => {
     setFreeMode(!freeMode);
-    setSelectedPricing(!freeMode ? "Free" : ""); // set "Free" when toggled on, reset when off
+    setSelectedPricing(!freeMode ? "free" : ""); // set "Free" when toggled on, reset when off
   }}
   className={`w-12 h-6 rounded-full relative cursor-pointer transition-colors ${
     freeMode ? "bg-green-500" : "bg-gray-300"
@@ -771,7 +771,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
         margin="0"
         variant="primary"
         size="medium"
-        onClick={() => setSelectedPricing("Free")}
+        onClick={() => setSelectedPricing("free")}
         className="flex items-center gap-2"
       />
       <Button
@@ -789,7 +789,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
         margin="0"
         variant="primary"
         size="medium"
-        onClick={() => setSelectedPricing("Paid")}
+        onClick={() => setSelectedPricing("paid")}
         className="flex items-center gap-2"
       />
     </div>
