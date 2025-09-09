@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "./ui/Button";
 
@@ -9,16 +9,60 @@ export default function Header({
   setFreeMode,
   menuOpen,
   setMenuOpen,
-  handleSubmit,
   formData,
   handleInputChange,
   formErrors,
-  success,
+  setFormData,
 }) {
+  const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusColor, setStatusColor] = useState("");
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setStatusMessage("");
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/send-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    // 2-second simulated delay
+    setTimeout(() => {
+      setLoading(false);
+
+      if (data.success) {
+        // Show success message first
+        setStatusMessage("✅ Thanks for contacting us! We’ll get back to you soon.");
+        setStatusColor("text-green-600");
+
+        // Clear form after a short delay so user sees message
+        setTimeout(() => setFormData({ name: "", email: "", message: "" }), 500);
+      } else {
+        setStatusMessage("❌ Failed to send email. Please try again.");
+        setStatusColor("text-red-600");
+      }
+    }, 2000);
+  } catch (err) {
+    setTimeout(() => {
+      setLoading(false);
+      setStatusMessage("❌ An error occurred. Please try again.");
+      setStatusColor("text-red-600");
+    }, 2000);
+    console.error(err);
+  }
+};
+
+
   return (
     <header className="w-full bg-[#3375F5] py-4 px-6 rounded-b-lg">
       <div className="w-full max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Navigation */}
+               {/* Navigation */}
         <nav className="flex justify-between items-center">
           {/* Left: Free Mode */}
           <div className="flex items-center gap-2">
@@ -162,8 +206,9 @@ export default function Header({
               <h2 className="text-center text-2xl font-extrabold mb-6 text-[#4f46e5]">
                 Contact Us
               </h2>
+
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                {["name","email","message"].map((field,i) => (
+                {["name", "email", "message"].map((field, i) => (
                   <div key={i} className="relative">
                     {field !== "message" ? (
                       <input
@@ -189,14 +234,26 @@ export default function Header({
                     {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
                   </div>
                 ))}
+
+                {/* Submit Button */}
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-[#4f46e5] to-[#9333ea] text-white font-bold py-3 rounded-lg shadow-md hover:scale-105 transition-transform"
+                  disabled={loading}
+                  className={`bg-gradient-to-r from-[#4f46e5] to-[#9333ea] text-white font-bold py-3 rounded-lg shadow-md transition-transform flex justify-center items-center ${
+                    loading ? "opacity-70 cursor-not-allowed" : "hover:scale-105"
+                  }`}
                 >
-                  Send Message
+                  {loading ? "Sending..." : "Send Message"}
                 </button>
-                {success && <span className="text-green-600 text-center font-semibold">{success}</span>}
+
+                {/* Status Label */}
+                {statusMessage && (
+                  <span className={`text-center mt-2 text-lg font-semibold ${statusColor}`}>
+                    {statusMessage}
+                  </span>
+                )}
               </form>
+
               <span
                 onClick={() => setModalOpen(false)}
                 className="absolute top-2 right-4 text-3xl font-bold cursor-pointer hover:text-blue-900"

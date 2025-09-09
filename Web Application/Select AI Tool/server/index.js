@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
+const nodemailer = require("nodemailer");
 const cors = require("cors");
 
 dotenv.config();
@@ -271,6 +272,191 @@ app.get("/api/ebooks/:id", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+// Nodemailer transporter using env variables
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
+
+// Verify transporter
+transporter.verify((err, success) => {
+  if (err) {
+    console.log("Error configuring email transporter:", err);
+  } else {
+    console.log("Email transporter is ready");
+  }
+});
+
+// API to receive email from modal
+app.post("/api/send-email", async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+const mailOptions = {
+  from: `"${name}" <${email}>`,
+  to: process.env.GMAIL_USER,
+  subject: `New Contact Form Submission from ${name}`,
+  text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+  html: `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Contact Form Submission</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f4f4f8;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        animation: fadeIn 1.2s ease-in-out;
+      }
+
+      /* Fade-in animation */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Header with gradient background */
+      .header {
+        background: linear-gradient(90deg, #4f46e5, #9333ea);
+        padding: 30px;
+        text-align: center;
+      }
+      .header img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        object-fit: cover;
+        animation: logoPulse 2s infinite alternate;
+      }
+
+      /* Logo pulse animation */
+      @keyframes logoPulse {
+        from { transform: scale(1); }
+        to { transform: scale(1.08); }
+      }
+
+      .banner {
+        background: #e0f7fa;
+        color: #00796b;
+        font-weight: bold;
+        text-align: center;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin: 20px;
+        animation: slideIn 1s ease-out;
+      }
+
+      /* Slide-in animation */
+      @keyframes slideIn {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+
+      .content {
+        padding: 20px 30px;
+      }
+      .content h2 {
+        font-size: 22px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .content p {
+        font-size: 16px;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+
+      /* Footer styling */
+      .footer {
+        background-color: #f1f1f5;
+        padding: 20px;
+        text-align: center;
+        font-size: 14px;
+        color: #888;
+        border-top: 1px solid #ddd;
+      }
+      .footer a {
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 640px) {
+        .content, .banner { padding: 15px; }
+        .header img { width: 80px; height: 80px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Header with Logo -->
+      <div class="header">
+        <img src="cid:logo" alt="Company Logo" />
+      </div>
+
+      <!-- Animated Banner -->
+      <div class="banner">
+        🚀 New Contact Form Submission Received!
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <h2>Details</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong><br>${message}</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        &copy; ${new Date().getFullYear()} Carit. All rights reserved.<br>
+        Visit us at <a href="https://yourwebsite.com">yourwebsite.com</a>
+      </div>
+    </div>
+  </body>
+  </html>
+  `,
+  attachments: [
+    {
+      filename: "logo.png",
+      path: "assets/logo.png",
+      cid: "logo"
+    }
+  ]
+};
+
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ success: "Email sent successfully!" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ error: "Failed to send email." });
+  }
+});
+
 
 
 // Start server

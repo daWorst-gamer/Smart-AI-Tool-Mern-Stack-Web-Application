@@ -15,7 +15,6 @@ const navigate = useNavigate();
 const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 const [formErrors, setFormErrors] = useState({});
 const [success, setSuccess] = useState(false);
-const [loading, setLoading] = useState(false);
 // Add state to track View More toggles
 const [showAllCategories, setShowAllCategories] = useState(false);
 const [showAllProfessions, setShowAllProfessions] = useState(false);
@@ -32,6 +31,52 @@ useEffect(() => {
 
   return () => clearTimeout(delayDebounceFn); // cleanup
 }, [searchQuery]);
+
+
+const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusColor, setStatusColor] = useState("");
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setStatusMessage("");
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/send-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    // 2-second simulated delay
+    setTimeout(() => {
+      setLoading(false);
+
+      if (data.success) {
+        // Show success message first
+        setStatusMessage("✅ Thanks for contacting us! We’ll get back to you soon.");
+        setStatusColor("text-green-600");
+
+        // Clear form after a short delay so user sees message
+        setTimeout(() => setFormData({ name: "", email: "", message: "" }), 500);
+      } else {
+        setStatusMessage("❌ Failed to send email. Please try again.");
+        setStatusColor("text-red-600");
+      }
+    }, 2000);
+  } catch (err) {
+    setTimeout(() => {
+      setLoading(false);
+      setStatusMessage("❌ An error occurred. Please try again.");
+      setStatusColor("text-red-600");
+    }, 2000);
+    console.error(err);
+  }
+};
+
 
 
 // Replace handleFilterClick with:
@@ -75,17 +120,7 @@ const validateForm = () => {
   return errors;
 };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  const errors = validateForm();
-  if (Object.keys(errors).length === 0) {
-    setSuccess(true);
-    setFormData({ name: "", email: "", message: "" });
-    setTimeout(() => setSuccess(false), 3000);
-  } else {
-    setFormErrors(errors);
-  }
-};
+
     const [showScroll, setShowScroll] = useState(false);
   useEffect(() => {
   const handleScroll = () => {
@@ -461,168 +496,95 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
           />
         </nav>
 
-        {/* Email Modal */}
-{modalOpen && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backdropFilter: "blur(5px)", // glassmorphism
-      backgroundColor: "rgba(0,0,0,0.5)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 999,
-      animation: "fadeInOverlay 0.5s ease",
-    }}
-    onClick={() => setModalOpen(false)}
-  >
-    <div
-      style={{
-        background: "rgba(255,255,255,0.95)",
-        padding: "2.5rem 2rem",
-        borderRadius: "20px",
-        width: "90%",
-        maxWidth: "520px",
-        position: "relative",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
-        animation: "modalBounce 0.6s ease",
-        transformOrigin: "top center",
-      }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <h2 style={{
-        marginBottom: "2rem",
-        fontSize: "2rem",
-        textAlign: "center",
-        fontWeight: "900",
-        color: "#4f46e5",
-        letterSpacing: "0.5px"
-      }}>
-        Contact Us
-      </h2>
+    {/* Modal */}
+        {modalOpen && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backdropFilter: "blur(5px)",
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 999,
+            }}
+            onClick={() => setModalOpen(false)}
+          >
+            <div
+              style={{
+                background: "rgba(255,255,255,0.95)",
+                padding: "2rem",
+                borderRadius: "20px",
+                width: "90%",
+                maxWidth: "520px",
+                position: "relative",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-center text-2xl font-extrabold mb-6 text-[#4f46e5]">
+                Contact Us
+              </h2>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-    {/* Floating Input Fields with Placeholder */}
-{["name","email","message"].map((field, i) => (
-  <div key={i} style={{ position: "relative", marginBottom: "1rem" }}>
-    {field !== "message" ? (
-      <input
-        type={field === "email" ? "email" : "text"}
-        name={field}
-        value={formData[field]}
-        onChange={handleInputChange}
-        required
-        placeholder={field === "name" ? "Full Name" : "Email Address"}
-        style={{
-          width: "100%",
-          padding: "1rem",
-          borderRadius: "12px",
-          border: "2px solid #ccc",
-          fontSize: "1rem",
-          outline: "none",
-          transition: "all 0.3s ease",
-        }}
-      />
-    ) : (
-      <textarea
-        name={field}
-        value={formData[field]}
-        onChange={handleInputChange}
-        required
-        placeholder="Your Message"
-        rows={5}
-        style={{
-          width: "100%",
-          padding: "1rem",
-          borderRadius: "12px",
-          border: "2px solid #ccc",
-          fontSize: "1rem",
-          outline: "none",
-          transition: "all 0.3s ease",
-        }}
-      />
-    )}
-    {formErrors[field] && (
-      <span style={{ color: "red", fontSize: "0.9rem" }}>{formErrors[field]}</span>
-    )}
-  </div>
-))}
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                {["name", "email", "message"].map((field, i) => (
+                  <div key={i} className="relative">
+                    {field !== "message" ? (
+                      <input
+                        type={field === "email" ? "email" : "text"}
+                        name={field}
+                        value={formData[field]}
+                        onChange={handleInputChange}
+                        placeholder={field === "name" ? "Full Name" : "Email Address"}
+                        required
+                        className="w-full p-4 border-2 border-gray-300 rounded-lg outline-none focus:border-[#4f46e5] focus:shadow-md transition-all"
+                      />
+                    ) : (
+                      <textarea
+                        name={field}
+                        value={formData[field]}
+                        onChange={handleInputChange}
+                        rows={5}
+                        placeholder="Your Message"
+                        required
+                        className="w-full p-4 border-2 border-gray-300 rounded-lg outline-none focus:border-[#4f46e5] focus:shadow-md transition-all"
+                      />
+                    )}
+                    {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
+                  </div>
+                ))}
 
-{/* Internal CSS for Focus Animation */}
-<style>
-  {`
-    input:focus, textarea:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 8px rgba(79,70,229,0.4);
-    }
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`bg-gradient-to-r from-[#4f46e5] to-[#9333ea] text-white font-bold py-3 rounded-lg shadow-md transition-transform flex justify-center items-center ${
+                    loading ? "opacity-70 cursor-not-allowed" : "hover:scale-105"
+                  }`}
+                >
+                  {loading ? "Sending..." : "Send Message"}
+                </button>
 
-    input::placeholder, textarea::placeholder {
-      color: #999;
-      opacity: 1;
-      transition: all 0.3s ease;
-    }
+                {/* Status Label */}
+                {statusMessage && (
+                  <span className={`text-center mt-2 text-lg font-semibold ${statusColor}`}>
+                    {statusMessage}
+                  </span>
+                )}
+              </form>
 
-    input:focus::placeholder, textarea:focus::placeholder {
-      color: transparent;
-    }
-  `}
-</style>
-
-
-        <button
-          type="submit"
-          style={{
-            padding: "1rem",
-            borderRadius: "12px",
-            border: "none",
-            background: "linear-gradient(135deg, #4f46e5, #9333ea)",
-            color: "#fff",
-            fontWeight: "700",
-            fontSize: "1rem",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-            boxShadow: "0 8px 20px rgba(79,70,229,0.4)",
-          }}
-          onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
-          onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-        >
-          Send Message
-        </button>
-
-        {success && <span style={{ color: "green", textAlign: "center", fontWeight: "600" }}>Message sent successfully!</span>}
-      </form>
-
-      {/* Large animated Close Icon */}
-      <span
-        onClick={() => setModalOpen(false)}
-        style={{
-          position: "absolute",
-          top: "0.5rem",
-          right: "1rem",
-          cursor: "pointer",
-          fontWeight: "900",
-          fontSize: "2.5rem",
-          color: "#4f46e5",
-          transition: "all 0.3s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.transform = "scale(1.2)";
-          e.target.style.color = "#1e3a8a";
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.transform = "scale(1)";
-          e.target.style.color = "#4f46e5";
-        }}
-      >
-        ×
-      </span>
-    </div>
-  </div>
-)}
+              <span
+                onClick={() => setModalOpen(false)}
+                className="absolute top-2 right-4 text-3xl font-bold cursor-pointer hover:text-blue-900"
+              >
+                ×
+              </span>
+            </div>
+          </div>
+        )}
 
 {/* Internal CSS Animations */}
 <style>
