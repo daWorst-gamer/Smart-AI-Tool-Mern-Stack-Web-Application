@@ -1,108 +1,89 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import axios from "axios";
-import Loading from "../../components/loader";
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import SearchView from '../../components/ui/SearchView';
 import Button from '../../components/ui/Button';
+import ChipView from '../../components/ui/ChipView';
+import {FaArrowUp} from "react-icons/fa"
+import axios from 'axios'; // add axios
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
+import Loading from "../../components/loader"; // adjust path as needed
+
 import Header from "../../components/header"; // import the separated header
-import AllToolsSection from "../AllToolsSection"; // import the separated header
 
-const EbookDetailPage = () => {
-
-    const [modalOpen, setModalOpen] = useState(false);
-const [freeMode, setFreeMode] = useState(false);
-const [menuOpen, setMenuOpen] = useState(false);
-const [formData, setFormData] = useState({});
+const Terms = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 const [formErrors, setFormErrors] = useState({});
 const [success, setSuccess] = useState(false);
-
-// Handle input change
 const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  setFormData({ ...formData, [name]: value });
+  setFormData({ ...formData, [e.target.name]: e.target.value });
 };
 
-// Handle submit
+const validateForm = () => {
+  const errors = {};
+  if (!formData.name.trim()) errors.name = "Full Name is required";
+  if (!formData.email) errors.email = "Email is required";
+  else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Email is invalid";
+  if (!formData.message.trim()) errors.message = "Message is required";
+  return errors;
+};
+
 const handleSubmit = (e) => {
   e.preventDefault();
-  // simple validation example
-  let errors = {};
-  if (!formData.name) errors.name = "Name required";
-  if (!formData.email) errors.email = "Email required";
-  if (!formData.message) errors.message = "Message required";
-
-  setFormErrors(errors);
-
+  const errors = validateForm();
   if (Object.keys(errors).length === 0) {
-    // Send email logic here
-    console.log(formData);
-    setSuccess("Message sent successfully!");
+    setSuccess(true);
     setFormData({ name: "", email: "", message: "" });
+    setTimeout(() => setSuccess(false), 3000);
+  } else {
+    setFormErrors(errors);
   }
 };
-
-
     const [showScroll, setShowScroll] = useState(false);
-        useEffect(() => {
-        const handleScroll = () => {
-          if (window.scrollY > 300) {
-            setShowScroll(true);
-          } else {
-            setShowScroll(false);
-          }
-        };
-      
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-      }, []);
-      
-      const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      };
-         useEffect(() => {
-          const script = document.createElement("script");
-          script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
-          script.async = true;
-          document.body.appendChild(script);
-      
-          return () => {
-            document.body.removeChild(script); // Clean up on unmount
-          };
-        }, []);
-  const { id } = useParams();
-  const [ebook, setEbook] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-
   useEffect(() => {
-    const fetchEbook = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/ebooks/${id}`);
-        setEbook(res.data);
-      } catch (err) {
-        console.error("Error fetching ebook:", err);
-        setEbook(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEbook();
-  }, [id]);
- const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setShowModal(true);
-      setTimeout(() => setShowModal(false), 2000); // modal disappears after 2 seconds
-    });
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setShowScroll(true);
+    } else {
+      setShowScroll(false);
+    }
   };
 
-  if (loading) return <Loading />;
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
-  if (!ebook) return <p className="text-center mt-20 text-xl">Ebook not found.</p>;
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+   useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script); // Clean up on unmount
+    };
+  }, []);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [freeMode, setFreeMode] = useState(false); // <-- toggle state
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
-      {/* Header */}
+    <>
+      <Helmet>
+        <title>Select AI Tools</title>
+        <meta name="description" content="Find the perfect AI tool for any job. Browse 3000+ curated AI-powered tools with advanced search, filtering by category, profession, and ratings. Compare features and pricing." />
+        <meta property="og:title" content="AI Tools Directory - Discover 3000+ AI-Powered Tools | Select AI Tool" />
+        <meta property="og:description" content="Find the perfect AI tool for any job. Browse 3000+ curated AI-powered tools with advanced search, filtering by category, profession, and ratings. Compare features and pricing." />
+      </Helmet>
+      <main className="min-h-screen bg-bg-accent-blueLight">
+        {/* Header Section */}
       <Header
   modalOpen={modalOpen}
   setModalOpen={setModalOpen}
@@ -116,118 +97,99 @@ const handleSubmit = (e) => {
   formErrors={formErrors}
   success={success}
 />
+{/* Filter Buttons */}
+<section className="py-10">
+  <div className="max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+<h1 className="text-5xl font-bold text-text-secondary font-['Lexend_Mega'] capitalize [letter-spacing:0.1rem] text-center sm:text-left mb-3 sm:mb-6">
+  Terms & Conditions
+</h1>
 
-      {/* Main Content */}
-<main className="flex flex-col container mx-auto p-4 sm:p-6 gap-6">
-  {/* Top Section: Image + Title/Buttons */}
-  <div className="flex flex-col lg:flex-row gap-6">
-    {/* Image on the left */}
-    <div className="lg:w-1/3 flex-shrink-0">
-      <img
-        src="https://static.vecteezy.com/system/resources/previews/023/808/934/non_2x/chat-gpt-4-interface-and-conversation-method-powered-by-openai-s-advanced-artificial-intelligence-ai-powered-conversations-in-laptop-vector.jpg"
-        alt="Tool Preview"
-        className="w-full h-full object-cover rounded-lg border-2 border-border-primary shadow-[3px_4px_1px_#000000]"
-        style={{ minHeight: '300px' }}
-      />
-    </div>
 
-    {/* Title + Buttons on the right */}
-    <div className="flex-1 space-y-4">
-      <p className="text-sm text-gray-600">
-        <Link to="/ebook" className="text-blue-500 hover:underline font-medium">
-          All Ebooks
-        </Link>{" "}
-        / {ebook.name}
-      </p>
-      <h1 className="text-2xl sm:text-3xl font-bold">{ebook.name}</h1>
-
-      <div className="flex items-center gap-4 flex-wrap text-gray-700 text-sm">
-        <span>. {ebook.author}</span>
-        <span>. {ebook.publisher}</span>
-        <span>. Released: {ebook.publish_date}</span>
-      </div>
-
-      <div className="mt-2">
-        <span className="border border-black px-3 py-1 rounded-full text-sm">
-          {ebook.category}
-        </span>
-      </div>
-
-      <div className="flex gap-3 flex-wrap mt-4">
-        <button className="bg-[#8ecaff] text-black text-sm sm:text-base px-5 py-2 rounded border-2 border-black shadow-[1px_3px_1px_#000000] active:scale-110 active:shadow-lg transition-transform duration-150">
-          Download PDF
-        </button>
-        <button 
-        onClick={copyLink}
-        className="bg-[#ffff7f] text-black text-sm sm:text-base px-5 py-2 rounded border-2 border-black shadow-[1px_3px_1px_#000000] active:scale-110 active:shadow-lg transition-transform duration-150">
-          Copy Link
-        </button>
-
-         {/* Modal */}
-        {showModal && (
-          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded shadow-lg text-sm z-50 animate-fade">
-            Link Copied!
-          </div>
-        )}
-      </div>
     </div>
   </div>
+</section>
 
-  {/* Bottom Section: Overview + Featured Tools + Load More */}
-  <div className="space-y-6 mt-6">
-    {/* Overview */}
-    <div className="bg-white rounded-lg border-2 border-border-primary shadow-[3px_4px_1px_#000000] p-4 sm:p-6 space-y-4">
-  <h2 className="text-lg font-bold">Overview</h2>
-  <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-   {ebook.overview
-}
+<section className="pb-32 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  {/* Main Introduction */}
+  <p
+    className="mt-0 mb-6 text-base sm:text-lg"
+    style={{
+      fontFamily: 'Public Sans',
+      fontWeight: 400,
+      lineHeight: '1.6',
+      letterSpacing: '0',
+    }}
+  >
+    Welcome to Select AI Tool. By accessing or using our website, you agree to comply with and be bound by the following Terms & Conditions. Please read them carefully before using our services.
   </p>
-  
-</div>
-<h2
-  className="mb-6"
-  style={{
-    fontFamily: 'Lexend Mega',
-    fontWeight: 700,       // Bold
-    fontStyle: 'normal',   // Bold handled via fontWeight
-    fontSize: '32px',
-    lineHeight: '140%',
-    marginTop:"5%",
-    letterSpacing: '-10%',
-    textTransform: 'capitalize',
-    color: '#0B0B0B'
-  }}
->
-  Search Results
-</h2>
 
-    {/* Featured Tools - Horizontal Wrap Perfectly Aligned */}
-<AllToolsSection />
+  {/* Use of Website */}
+  <h2
+    className="mb-4 text-xl sm:text-2xl font-semibold"
+    style={{ fontFamily: 'Lexend Mega', textTransform: 'capitalize', color: '#0B0B0B' }}
+  >
+    Use of Our Website
+  </h2>
+  <p className="mb-6 text-base sm:text-lg" style={{ fontFamily: 'Public Sans', lineHeight: '1.6' }}>
+    Users are granted a limited, non-exclusive, non-transferable license to access and use the website for personal and professional purposes only. You may not use the website for illegal activities or to harm other users.
+  </p>
 
-  <div className="text-center">
-   <Link to="/" >
-    <Button
-      text="Load More Tools"
-      text_font_size="24"
-      text_color="#ffffff"
-      fill_background_color="#0099ff"
-      border_border="2px solid #000000"
-      border_border_radius="4px"
-      effect_box_shadow="3px 4px 1px #000000"
-      padding="12px 30px"
-      layout_width="auto"
-      position="relative"
-      layout_gap="8px"
-      margin="0"
-      variant="primary"
-      size="large"
-      onClick={() => setVisibleCount((prev) => prev + 20)}
-    />
-    </Link>
-  </div>
-  </div>
-</main>
+  {/* Legal Requirements */}
+  <h2
+    className="mb-4 text-xl sm:text-2xl font-semibold"
+    style={{ fontFamily: 'Lexend Mega', textTransform: 'capitalize', color: '#0B0B0B' }}
+  >
+    Legal Requirements
+  </h2>
+  <p className="mb-6 text-base sm:text-lg" style={{ fontFamily: 'Public Sans', lineHeight: '1.6' }}>
+    By using this website, you confirm that you are of legal age to enter into contracts in your jurisdiction. You are responsible for ensuring compliance with all local laws and regulations when accessing or using our services.
+  </p>
 
+  {/* General Conditions */}
+  <h2
+    className="mb-4 text-xl sm:text-2xl font-semibold"
+    style={{ fontFamily: 'Lexend Mega', textTransform: 'capitalize', color: '#0B0B0B' }}
+  >
+    General Conditions
+  </h2>
+  <p className="mb-6 text-base sm:text-lg" style={{ fontFamily: 'Public Sans', lineHeight: '1.6' }}>
+    Select AI Tool reserves the right to modify, suspend, or discontinue any part of the website at any time without prior notice. Users are responsible for reviewing these Terms periodically for updates.
+  </p>
+
+  {/* Third-Party Links */}
+  <h2
+    className="mb-4 text-xl sm:text-2xl font-semibold"
+    style={{ fontFamily: 'Lexend Mega', textTransform: 'capitalize', color: '#0B0B0B' }}
+  >
+    Links to Third-Party Websites
+  </h2>
+  <p className="mb-6 text-base sm:text-lg" style={{ fontFamily: 'Public Sans', lineHeight: '1.6' }}>
+    Our website may include links to third-party websites. We do not control or endorse these websites and are not responsible for their content, privacy policies, or practices. Visiting these websites is at your own risk.
+  </p>
+
+  {/* Data Collection */}
+  <h2
+    className="mb-4 text-xl sm:text-2xl font-semibold"
+    style={{ fontFamily: 'Lexend Mega', textTransform: 'capitalize', color: '#0B0B0B' }}
+  >
+    Data Collection
+  </h2>
+  <p className="mb-6 text-base sm:text-lg" style={{ fontFamily: 'Public Sans', lineHeight: '1.6' }}>
+    We may collect personal information, such as your name, email address, and usage data, to improve our services. All data is handled according to our Privacy Policy, and we take steps to protect your information.
+  </p>
+
+  {/* Contact Us */}
+  <h2
+    className="mb-4 text-xl sm:text-2xl font-semibold"
+    style={{ fontFamily: 'Lexend Mega', textTransform: 'capitalize', color: '#0B0B0B' }}
+  >
+    Contact Us
+  </h2>
+  <p className="mb-6 text-base sm:text-lg" style={{ fontFamily: 'Public Sans', lineHeight: '1.6' }}>
+    If you have any questions about these Terms & Conditions or need assistance, please contact us at <a href="mailto:support@selectaitool.com" className="text-blue-500 underline">support@selectaitool.com</a>.
+  </p>
+</section>
 
 
 
@@ -389,8 +351,10 @@ const handleSubmit = (e) => {
     />
   </button>
 )}
-    </div>
+
+      </main>
+    </>
   );
 };
 
-export default EbookDetailPage;
+export default Terms;

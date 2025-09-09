@@ -1,238 +1,108 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import axios from "axios";
-import Loading from "../../components/loader";
+import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { Link } from "react-router-dom";
+
+import Header from "../../components/header"; 
 import Button from '../../components/ui/Button';
-import Header from "../../components/header"; // import the separated header
-import AllToolsSection from "../AllToolsSection"; // import the separated header
 
-const EbookDetailPage = () => {
-
-    const [modalOpen, setModalOpen] = useState(false);
-const [freeMode, setFreeMode] = useState(false);
-const [menuOpen, setMenuOpen] = useState(false);
-const [formData, setFormData] = useState({});
-const [formErrors, setFormErrors] = useState({});
-const [success, setSuccess] = useState(false);
-
-// Handle input change
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  setFormData({ ...formData, [name]: value });
-};
-
-// Handle submit
-const handleSubmit = (e) => {
-  e.preventDefault();
-  // simple validation example
-  let errors = {};
-  if (!formData.name) errors.name = "Name required";
-  if (!formData.email) errors.email = "Email required";
-  if (!formData.message) errors.message = "Message required";
-
-  setFormErrors(errors);
-
-  if (Object.keys(errors).length === 0) {
-    // Send email logic here
-    console.log(formData);
-    setSuccess("Message sent successfully!");
-    setFormData({ name: "", email: "", message: "" });
-  }
-};
-
-
-    const [showScroll, setShowScroll] = useState(false);
-        useEffect(() => {
-        const handleScroll = () => {
-          if (window.scrollY > 300) {
-            setShowScroll(true);
-          } else {
-            setShowScroll(false);
-          }
-        };
-      
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-      }, []);
-      
-      const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      };
-         useEffect(() => {
-          const script = document.createElement("script");
-          script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
-          script.async = true;
-          document.body.appendChild(script);
-      
-          return () => {
-            document.body.removeChild(script); // Clean up on unmount
-          };
-        }, []);
-  const { id } = useParams();
-  const [ebook, setEbook] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+const NotFound = () => {
+  const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {
-    const fetchEbook = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/ebooks/${id}`);
-        setEbook(res.data);
-      } catch (err) {
-        console.error("Error fetching ebook:", err);
-        setEbook(null);
-      } finally {
-        setLoading(false);
-      }
+    const handleScroll = () => {
+      setShowScroll(window.scrollY > 300);
     };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    fetchEbook();
-  }, [id]);
- const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setShowModal(true);
-      setTimeout(() => setShowModal(false), 2000); // modal disappears after 2 seconds
-    });
-  };
-
-  if (loading) return <Loading />;
-
-  if (!ebook) return <p className="text-center mt-20 text-xl">Ebook not found.</p>;
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col">
-      {/* Header */}
-      <Header
-  modalOpen={modalOpen}
-  setModalOpen={setModalOpen}
-  freeMode={freeMode}
-  setFreeMode={setFreeMode}
-  menuOpen={menuOpen}
-  setMenuOpen={setMenuOpen}
-  handleSubmit={handleSubmit}
-  formData={formData}
-  handleInputChange={handleInputChange}
-  formErrors={formErrors}
-  success={success}
-/>
+    <>
+      <Helmet>
+        <title>Select AI Tools - 404 Not Found</title>
+        <meta name="description" content="Page not found. Explore the perfect AI tool for you." />
+      </Helmet>
 
-      {/* Main Content */}
-<main className="flex flex-col container mx-auto p-4 sm:p-6 gap-6">
-  {/* Top Section: Image + Title/Buttons */}
-  <div className="flex flex-col lg:flex-row gap-6">
-    {/* Image on the left */}
-    <div className="lg:w-1/3 flex-shrink-0">
-      <img
-        src="https://static.vecteezy.com/system/resources/previews/023/808/934/non_2x/chat-gpt-4-interface-and-conversation-method-powered-by-openai-s-advanced-artificial-intelligence-ai-powered-conversations-in-laptop-vector.jpg"
-        alt="Tool Preview"
-        className="w-full h-full object-cover rounded-lg border-2 border-border-primary shadow-[3px_4px_1px_#000000]"
-        style={{ minHeight: '300px' }}
-      />
-    </div>
+      <main className="min-h-screen bg-gray-50">
+        <Header />
 
-    {/* Title + Buttons on the right */}
-    <div className="flex-1 space-y-4">
-      <p className="text-sm text-gray-600">
-        <Link to="/ebook" className="text-blue-500 hover:underline font-medium">
-          All Ebooks
-        </Link>{" "}
-        / {ebook.name}
-      </p>
-      <h1 className="text-2xl sm:text-3xl font-bold">{ebook.name}</h1>
+        <section className="flex flex-col items-center justify-center min-h-screen text-center px-4 sm:px-6 lg:px-8">
+          <h1
+            className="text-gray-900 mb-4"
+            style={{
+              fontFamily: 'Lexend Mega',
+              fontWeight: 800,
+              fontStyle: 'normal',
+              fontSize: '200px',
+              lineHeight: '140%',
+              letterSpacing: '-10%',
+              textTransform: 'capitalize',
+              color: "#33333399",
+            }}
+          >
+            404
+          </h1>
 
-      <div className="flex items-center gap-4 flex-wrap text-gray-700 text-sm">
-        <span>. {ebook.author}</span>
-        <span>. {ebook.publisher}</span>
-        <span>. Released: {ebook.publish_date}</span>
-      </div>
+          <h2
+            className="mb-6"
+            style={{
+              fontFamily: 'Lexend Mega',
+              fontWeight: 600,
+              fontStyle: 'normal',
+              fontSize: '48px',
+              lineHeight: '140%',
+              letterSpacing: '-8%',
+              textTransform: 'capitalize',
+              color: '#33333399',
+            }}
+          >
+            SORRY! PAGE NOT FOUND
+          </h2>
 
-      <div className="mt-2">
-        <span className="border border-black px-3 py-1 rounded-full text-sm">
-          {ebook.category}
-        </span>
-      </div>
+          <p
+            className="mb-8 mx-auto"
+            style={{
+              fontFamily: 'Public Sans',
+              fontWeight: 600,
+              fontStyle: 'normal',
+              fontSize: '20px',
+              lineHeight: '140%',
+              letterSpacing: '2%',
+              textAlign: 'center',
+              textTransform: 'capitalize',
+              maxWidth: '900px',
+            }}
+          >
+            Sorry, the page you’re looking for may have been moved, deleted, or never existed in the first place. 
+            Let’s get you back to exploring the perfect AI tool for you.
+          </p>
 
-      <div className="flex gap-3 flex-wrap mt-4">
-        <button className="bg-[#8ecaff] text-black text-sm sm:text-base px-5 py-2 rounded border-2 border-black shadow-[1px_3px_1px_#000000] active:scale-110 active:shadow-lg transition-transform duration-150">
-          Download PDF
-        </button>
-        <button 
-        onClick={copyLink}
-        className="bg-[#ffff7f] text-black text-sm sm:text-base px-5 py-2 rounded border-2 border-black shadow-[1px_3px_1px_#000000] active:scale-110 active:shadow-lg transition-transform duration-150">
-          Copy Link
-        </button>
+         <Link to="/">
+  <Button
+    text="Go Back Home"
+    text_font_size="24"
+    text_color="#ffffff"
+    fill_background_color="#0099ff"
+    border_border="2px solid #000000"
+    border_border_radius="4px"
+    effect_box_shadow="3px 4px 1px #000000"
+    padding="12px 30px"
+    layout_width="auto"
+    position="relative"
+    layout_gap="8px"
+    margin="0"
+    variant="primary"
+    size="large"
+    onClick={() => {}}
+  />
+</Link>
 
-         {/* Modal */}
-        {showModal && (
-          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-black text-white px-4 py-2 rounded shadow-lg text-sm z-50 animate-fade">
-            Link Copied!
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
-
-  {/* Bottom Section: Overview + Featured Tools + Load More */}
-  <div className="space-y-6 mt-6">
-    {/* Overview */}
-    <div className="bg-white rounded-lg border-2 border-border-primary shadow-[3px_4px_1px_#000000] p-4 sm:p-6 space-y-4">
-  <h2 className="text-lg font-bold">Overview</h2>
-  <p className="text-gray-700 leading-relaxed text-sm sm:text-base">
-   {ebook.overview
-}
-  </p>
-  
-</div>
-<h2
-  className="mb-6"
-  style={{
-    fontFamily: 'Lexend Mega',
-    fontWeight: 700,       // Bold
-    fontStyle: 'normal',   // Bold handled via fontWeight
-    fontSize: '32px',
-    lineHeight: '140%',
-    marginTop:"5%",
-    letterSpacing: '-10%',
-    textTransform: 'capitalize',
-    color: '#0B0B0B'
-  }}
->
-  Search Results
-</h2>
-
-    {/* Featured Tools - Horizontal Wrap Perfectly Aligned */}
-<AllToolsSection />
-
-  <div className="text-center">
-   <Link to="/" >
-    <Button
-      text="Load More Tools"
-      text_font_size="24"
-      text_color="#ffffff"
-      fill_background_color="#0099ff"
-      border_border="2px solid #000000"
-      border_border_radius="4px"
-      effect_box_shadow="3px 4px 1px #000000"
-      padding="12px 30px"
-      layout_width="auto"
-      position="relative"
-      layout_gap="8px"
-      margin="0"
-      variant="primary"
-      size="large"
-      onClick={() => setVisibleCount((prev) => prev + 20)}
-    />
-    </Link>
-  </div>
-  </div>
-</main>
+        </section>
 
 
-
-
-
-        {/* Footer */}
+       {/* Footer */}
         <footer className="bg-bg-primary-dark py-6 sm:py-12 lg:py-16" style={{ backgroundColor: "#172936"}}>
           <div className="max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-12 mb-8">
@@ -389,8 +259,10 @@ const handleSubmit = (e) => {
     />
   </button>
 )}
-    </div>
+
+      </main>
+    </>
   );
 };
 
-export default EbookDetailPage;
+export default NotFound;
