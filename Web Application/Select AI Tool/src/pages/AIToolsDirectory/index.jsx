@@ -1277,7 +1277,7 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
   }
   @media (max-width: 640px) {
     .scroll-to-top {
-      bottom: 4rem;
+      bottom: 4.5rem;
       right: 1rem;
     }
   }
