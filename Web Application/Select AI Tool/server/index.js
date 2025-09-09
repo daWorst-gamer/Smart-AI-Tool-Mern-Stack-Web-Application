@@ -431,8 +431,8 @@ const mailOptions = {
 
       <!-- Footer -->
       <div class="footer">
-        &copy; ${new Date().getFullYear()} Carit. All rights reserved.<br>
-        Visit us at <a href="https://yourwebsite.com">yourwebsite.com</a>
+        &copy; ${new Date().getFullYear()} Select AI Tools. All rights reserved.<br>
+        Visit us at <a href="https://selectaitools.com">yourwebsite.com</a>
       </div>
     </div>
   </body>
