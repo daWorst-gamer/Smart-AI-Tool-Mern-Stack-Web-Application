@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const path = require('path');
+
 
 const nodemailer = require("nodemailer");
 const cors = require("cors");
@@ -441,7 +443,7 @@ const mailOptions = {
   attachments: [
     {
       filename: "logo.png",
-      path: "assets/logo.png",
+      path: path.join(__dirname, "assets/logo.png"),
       cid: "logo"
     }
   ]
