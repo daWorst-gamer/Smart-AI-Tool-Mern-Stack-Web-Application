@@ -324,7 +324,6 @@ if (!tool) {
 </div>
 
 
-{/* Featured Tools Section */}
 {/* Featured / More Tools Section */}
 <div className="flex flex-col gap-6 w-full">
   <h3 className="font-semibold mb-4 text-xl">

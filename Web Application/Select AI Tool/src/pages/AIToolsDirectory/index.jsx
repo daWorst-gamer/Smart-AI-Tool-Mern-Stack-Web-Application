@@ -1102,12 +1102,10 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
       margin="0"
       variant="primary"
       size="small"
-      onClick={() => {
-        window.open(tool?.link || tool?.official_link, "_blank", "noopener,noreferrer");
-        fetch(`${import.meta.env.VITE_API_URL}/api/tools/${tool._id}/visit`, {
-          method: "POST",
-        }).catch((err) => console.error("Error logging visit:", err));
-      }}
+        onClick={(e) => {
+    e.stopPropagation(); // Prevents card click
+    window.open(tool.link, "_blank"); // Open the link
+  }}
       className="whitespace-nowrap leading-none"
     />
   </div>

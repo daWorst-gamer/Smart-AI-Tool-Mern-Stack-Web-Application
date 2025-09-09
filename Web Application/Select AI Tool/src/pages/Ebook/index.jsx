@@ -594,81 +594,83 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
     </div>
   ) : (
     ebooks.slice(0, visibleCount).map((ebook) => (
-      <div
-        key={ebook?._id}
-        className="flex bg-white border-border-primary shadow-[3px_4px_1px_#000000] rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition w-full"
-        // onClick={() => navigate(`/ebooks/${ebook._id}`)}
-      >
-        {/* Book Cover */}
-        {ebook.image && (
-          <img
-            src={ebook.image}
-            alt={ebook.name}
-            className="w-[150px] h-[200px] object-cover flex-shrink-0"
-          />
-        )}
+   <div
+  key={ebook?._id}
+  className="flex bg-white border-border-primary shadow-[3px_4px_1px_#000000] rounded-lg overflow-hidden cursor-pointer 
+             transform transition-transform duration-300 hover:scale-105 hover:shadow-xl"
+  // onClick={() => navigate(`/ebooks/${ebook._id}`)}
+>
+  {/* Book Cover */}
+  {ebook.image && (
+    <img
+      src={ebook.image}
+      alt={ebook.name}
+      className="w-[150px] h-[200px] object-cover flex-shrink-0"
+    />
+  )}
 
-        {/* Book Info */}
-        <div className="flex flex-col justify-between p-5 flex-1">
-          <div>
-            <h3 className="text-lg font-bold text-gray-800 leading-snug">
-              {ebook?.name}
-            </h3>
-            <p className="text-sm text-gray-600 mt-1">
-              by {ebook?.author} • {ebook?.publisher}
-            </p>
+  {/* Book Info */}
+  <div className="flex flex-col justify-between p-5 flex-1">
+    <div>
+      <h3 className="text-lg font-bold text-gray-800 leading-snug">
+        {ebook?.name}
+      </h3>
+      <p className="text-sm text-gray-600 mt-1">
+        by {ebook?.author} • {ebook?.publisher}
+      </p>
 
-            {/* Category */}
-<div className="flex flex-wrap gap-2 mt-2">
-  <Button
-    text={ebook?.category}
-    text_font_size="14"
-    text_color="#000000"
-    fill_background_color="#ffffff"
-    border_border="1px solid #000000"
-    border_border_radius="14px"
-    effect_box_shadow="1px 2px 1px #000000"
-    padding="4px 14px"
-    layout_width="auto"
-    position="relative"
-    layout_gap="4px"
-    margin="0"
-    variant="secondary"
-    size="small"
-    onClick={() => {}}
-    className="text-sm"
-  />
+      {/* Category */}
+      <div className="flex flex-wrap gap-2 mt-2">
+        <Button
+          text={ebook?.category}
+          text_font_size="14"
+          text_color="#000000"
+          fill_background_color="#ffffff"
+          border_border="1px solid #000000"
+          border_border_radius="14px"
+          effect_box_shadow="1px 2px 1px #000000"
+          padding="4px 14px"
+          layout_width="auto"
+          position="relative"
+          layout_gap="4px"
+          margin="0"
+          variant="secondary"
+          size="small"
+          onClick={() => {}}
+          className="text-sm"
+        />
+      </div>
+    </div>
+
+    {/* Footer */}
+    <div className="flex justify-between items-center mt-4">
+      <p className="text-sm text-gray-500">{ebook?.publish_date}</p>
+      <Button
+        text="View Book"
+        text_font_size="14"
+        text_color="#ffffff"
+        fill_background_color="#0099ff"
+        border_border="2px solid #000000"
+        border_border_radius="6px"
+        effect_box_shadow="1px 2px 1px #000000"
+        padding="6px 20px"
+        layout_width="auto"
+        position="relative"
+        layout_gap="0"
+        margin="0"
+        variant="primary"
+        size="small"
+        onClick={(e) => {
+  e.stopPropagation();
+  navigate(`/ebooks/${ebook._id}`);
+}}
+
+        className="whitespace-nowrap leading-none"
+      />
+    </div>
+  </div>
 </div>
 
-          </div>
-
-          {/* Footer */}
-          <div className="flex justify-between items-center mt-4">
-            <p className="text-sm text-gray-500">{ebook?.publish_date}</p>
-              <Button
-    text="View Book"
-    text_font_size="14"
-    text_color="#ffffff"
-    fill_background_color="#0099ff"
-    border_border="2px solid #000000"
-    border_border_radius="6px"
-    effect_box_shadow="1px 2px 1px #000000"
-    padding="6px 20px"
-    layout_width="auto"
-    position="relative"
-    layout_gap="0"
-    margin="0"
-    variant="primary"
-    size="small"
-    onClick={(e) => {
-      e.stopPropagation();
-      navigate(`/ebooks/${ebook._id}`);
-    }}
-    className="whitespace-nowrap leading-none"
-  />
-          </div>
-        </div>
-      </div>
     ))
   )}
 </div>

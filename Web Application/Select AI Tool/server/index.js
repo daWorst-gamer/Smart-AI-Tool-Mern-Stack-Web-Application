@@ -183,6 +183,96 @@ app.get("/api/tools/:id", async (req, res) => {
 });
 
 
+// 📚 Ebook Schema
+const ebookSchema = new mongoose.Schema(
+  {
+    name: String,
+    image: String,
+    author: String,
+    publisher: String,
+    publish_date: String,
+    category: String,
+  },
+  { collection: "ebooks" }
+);
+
+const Ebook = mongoose.model("Ebook", ebookSchema);
+
+// 📂 Ebook Category Schema
+const ebookCategorySchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+  },
+  { collection: "ebook_categories" } // make sure this matches your DB collection
+);
+
+const EbookCategory = mongoose.model("EbookCategory", ebookCategorySchema);
+
+// ✅ Route: Get ebook categories directly from ebooks
+app.get("/api/ebook-categories", async (req, res) => {
+  try {
+    const categories = await Ebook.distinct("category");
+    res.json(categories);
+  } catch (err) {
+    console.error("Error fetching ebook categories:", err);
+    res.status(500).json({ error: "Failed to fetch categories" });
+  }
+});
+
+
+
+// API: Get all ebooks
+app.get("/api/ebooks", async (req, res) => {
+  try {
+    const ebooks = await Ebook.find();
+    res.json(ebooks);
+  } catch (err) {
+    console.error("Error fetching ebooks:", err);
+    res.status(500).json({ error: "Failed to fetch ebooks" });
+  }
+});
+
+
+// ✅ API: Filter ebooks by category (supports multiple categories)
+app.post("/api/ebooks/filter", async (req, res) => {
+  const { categories } = req.body;
+
+  try {
+    let filter = {};
+
+    // if categories provided → filter only those
+    if (categories && categories.length) {
+      filter.category = { $in: categories };
+    }
+
+    const ebooks = await Ebook.find(filter);
+    res.json(ebooks);
+  } catch (err) {
+    console.error("Error filtering ebooks:", err);
+    res.status(500).json({ error: "Failed to filter ebooks" });
+  }
+});
+
+// GET /api/ebooks/:id
+app.get("/api/ebooks/:id", async (req, res) => {
+  const { id } = req.params;
+
+  // Validate Mongo ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid Ebook ID" });
+  }
+
+  try {
+    const ebook = await Ebook.findById(id);
+    if (!ebook) return res.status(404).json({ error: "Ebook not found" });
+    res.json(ebook);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 // Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
