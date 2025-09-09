@@ -2,13 +2,72 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import Loading from "../../components/loader";
-
 import Button from '../../components/ui/Button';
-
 import Header from "../../components/header"; // import the separated header
 import AllToolsSection from "../AllToolsSection"; // import the separated header
 
 const EbookDetailPage = () => {
+
+    const [modalOpen, setModalOpen] = useState(false);
+const [freeMode, setFreeMode] = useState(false);
+const [menuOpen, setMenuOpen] = useState(false);
+const [formData, setFormData] = useState({});
+const [formErrors, setFormErrors] = useState({});
+const [success, setSuccess] = useState(false);
+
+// Handle input change
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({ ...formData, [name]: value });
+};
+
+// Handle submit
+const handleSubmit = (e) => {
+  e.preventDefault();
+  // simple validation example
+  let errors = {};
+  if (!formData.name) errors.name = "Name required";
+  if (!formData.email) errors.email = "Email required";
+  if (!formData.message) errors.message = "Message required";
+
+  setFormErrors(errors);
+
+  if (Object.keys(errors).length === 0) {
+    // Send email logic here
+    console.log(formData);
+    setSuccess("Message sent successfully!");
+    setFormData({ name: "", email: "", message: "" });
+  }
+};
+
+
+    const [showScroll, setShowScroll] = useState(false);
+        useEffect(() => {
+        const handleScroll = () => {
+          if (window.scrollY > 300) {
+            setShowScroll(true);
+          } else {
+            setShowScroll(false);
+          }
+        };
+      
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+      }, []);
+      
+      const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+         useEffect(() => {
+          const script = document.createElement("script");
+          script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
+          script.async = true;
+          document.body.appendChild(script);
+      
+          return () => {
+            document.body.removeChild(script); // Clean up on unmount
+          };
+        }, []);
   const { id } = useParams();
   const [ebook, setEbook] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,17 +103,19 @@ const EbookDetailPage = () => {
   return (
     <div className="min-h-screen bg-blue-50 flex flex-col">
       {/* Header */}
-      <header className="bg-blue-400 text-white py-3 px-6 flex justify-between items-center flex-wrap gap-3">
-        <nav className="flex gap-4 font-semibold flex-wrap text-sm sm:text-base">
-          <a href="#">AI Tools</a>
-          <a href="#">Ebooks</a>
-          <a href="#">Terms</a>
-          <a href="#">Privacy Policy</a>
-        </nav>
-        <button className="bg-yellow-400 text-black font-bold px-4 py-2 rounded text-sm sm:text-base">
-          Email Us
-        </button>
-      </header>
+      <Header
+  modalOpen={modalOpen}
+  setModalOpen={setModalOpen}
+  freeMode={freeMode}
+  setFreeMode={setFreeMode}
+  menuOpen={menuOpen}
+  setMenuOpen={setMenuOpen}
+  handleSubmit={handleSubmit}
+  formData={formData}
+  handleInputChange={handleInputChange}
+  formErrors={formErrors}
+  success={success}
+/>
 
       {/* Main Content */}
 <main className="flex flex-col container mx-auto p-4 sm:p-6 gap-6">
@@ -155,64 +216,163 @@ const EbookDetailPage = () => {
 
 
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-10 px-6 mt-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 container mx-auto">
-          {/* Logo */}
-          <div>
-            <h3 className="text-lg font-bold">Select AI Tool</h3>
-            <p className="text-sm mt-2">
-              Your trusted connection to AI innovation
-            </p>
-            <div className="flex gap-3 mt-3">
-              <span className="bg-gray-700 px-2 py-1 rounded">F</span>
-              <span className="bg-gray-700 px-2 py-1 rounded">T</span>
-              <span className="bg-gray-700 px-2 py-1 rounded">I</span>
+        {/* Footer */}
+        <footer className="bg-bg-primary-dark py-6 sm:py-12 lg:py-16" style={{ backgroundColor: "#172936"}}>
+          <div className="max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-12 mb-8">
+         {/* Logo and Social Links */}
+<div className="flex flex-col items-center lg:items-start gap-7.5 w-full lg:w-auto">
+  <img src="/images/img_footer_logo.png" alt="Select AI Tool" className="w-[236px] h-[130px]" />
+  
+  <div className="flex items-center gap-5 mt-3"> {/* Added mt-3 for top margin */}
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_facebook_176.svg" alt="Facebook" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_instagram_167.svg" alt="Instagram" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_tiktok_fill_svgrepo_com.svg" alt="TikTok" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_pinterest_svgrepo_com.svg" alt="Pinterest" className="w-6 h-6" />
+    </a>
+    
+    <a href="#" className="transform transition-transform duration-300 hover:scale-125">
+      <img src="/images/img_youtube_168.svg" alt="YouTube" className="w-6 h-6" />
+    </a>
+  </div>
+</div>
+
+
+              {/* Footer Links */}
+              <div className="flex flex-col sm:flex-row justify-between w-full lg:w-auto gap-8 sm:gap-16 lg:gap-24">
+                {/* AI Tool Categories */}
+                <div className="flex flex-col gap-4.5">
+                  <h3 className="text-2xl font-bold text-text-white font-['Lexend_Mega'] capitalize">AI Tool Categories</h3>
+                  <div className="flex flex-col gap-3">
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">AI Development</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Content Creation</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Graphic Designing</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Internet Of Things</a>
+                  </div>
+                </div>
+
+                {/* Ebooks */}
+                <div className="flex flex-col gap-5">
+                  <h3 className="text-2xl font-bold text-text-white font-['Lexend_Mega'] capitalize">Ebooks</h3>
+                  <div className="flex flex-col gap-3">
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Governing the Machine: Ethics and AI Regulation</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">The Rise of Thinking Code: AI and the Future</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">The Moral Algorithm: Ethics in Artificial Decision-Making</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Beyond the Hype: Understanding the AI Revolution</a>
+                  </div>
+                </div>
+
+                {/* Others */}
+                <div className="flex flex-col gap-4.5">
+                  <h3 className="text-2xl font-bold text-text-white font-['Lexend_Mega'] capitalize">Others</h3>
+                  <div className="flex flex-col gap-3">
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Terms & Conditions</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Privacy Policy</a>
+                    <a href="#" className="text-xl font-medium text-text-disabled font-['Public_Sans'] hover:text-text-white transition-colors">Email Us</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Bottom */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-5">
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+                <Button
+                  text="View All Tools"
+                  text_font_size="16"
+                  text_color="#ffffff"
+                  fill_background_color="#0099ff"
+                  border_border="1px solid #b7b7b7"
+                  border_border_radius="3px"
+                  effect_box_shadow="1px 2px 1px #b8b8b8"
+                  padding="8px 20px"
+                  layout_width="auto"
+                  position="relative"
+                  layout_gap="8px"
+                  margin="0"
+                  variant="primary"
+                  size="small"
+                  onClick={() => {}}
+                />
+                <Button
+                  text="View All Ebooks"
+                  text_font_size="16"
+                  text_color="#ffffff"
+                  fill_background_color="#0099ff"
+                  border_border="1px solid #b7b7b7"
+                  border_border_radius="3px"
+                  effect_box_shadow="1px 2px 1px #b8b8b8"
+                  padding="8px 22px"
+                  layout_width="auto"
+                  position="relative"
+                  layout_gap="8px"
+                  margin="0"
+                  variant="primary"
+                  size="small"
+                  onClick={() => {}}
+                />
+              </div>
+              {/* <img src="/images/img_group_275.svg" alt="Scroll to top" className="w-[46px] h-[46px] cursor-pointer hover:opacity-80 transition-opacity" /> */}
+            </div>
+
+            {/* Divider */}
+            <div className="w-full h-px bg-bg-secondary-light my-5"></div>
+
+            {/* Copyright */}
+            <div className="text-right">
+              <p className="text-base font-normal text-text-disabled font-['Public_Sans']">© 2025 Select AI Tool inc. All rights reserved.</p>
             </div>
           </div>
+        </footer>
+<style>
+{`
+  .scroll-to-top {
+    position: fixed;
+    bottom: 7rem;
+    right: 1.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  @media (max-width: 640px) {
+    .scroll-to-top {
+      bottom: 4.5rem;
+      right: 0.9rem;
+    }
+  }
+`}
+</style>
 
-          {/* AI Tool Categories */}
-          <div>
-            <h3 className="font-semibold mb-3">AI Tool Categories</h3>
-            <ul className="space-y-2 text-sm">
-              <li>AI Development</li>
-              <li>Content Creation</li>
-              <li>Graphic Designing</li>
-              <li>Internet of Things</li>
-            </ul>
-            <button className="mt-3 bg-blue-500 text-white px-4 py-2 rounded text-sm">
-              View All Tools
-            </button>
-          </div>
-
-          {/* Ebooks */}
-          <div>
-            <h3 className="font-semibold mb-3">Ebooks</h3>
-            <ul className="space-y-2 text-sm">
-              <li>Governing the Machine</li>
-              <li>The Rise of Thinking Code</li>
-              <li>The Moral Algorithm</li>
-              <li>Beyond the Hype</li>
-            </ul>
-            <button className="mt-3 bg-blue-500 text-white px-4 py-2 rounded text-sm">
-              View All Ebooks
-            </button>
-          </div>
-
-          {/* Others */}
-          <div>
-            <h3 className="font-semibold mb-3">Others</h3>
-            <ul className="space-y-2 text-sm">
-              <li>Terms & Conditions</li>
-              <li>Privacy Policy</li>
-              <li>Email Us</li>
-            </ul>
-          </div>
-        </div>
-        <p className="text-center text-gray-400 text-sm mt-10">
-          © 2025 Select AI Tool Inc. All rights reserved.
-        </p>
-      </footer>
+{showScroll && (
+  <button
+    onClick={scrollToTop}
+    className="scroll-to-top"
+    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+  >
+    <img
+      src="/images/img_group_275.svg"
+      alt="Scroll to top"
+      className="w-[46px] h-[46px] cursor-pointer hover:opacity-120 transition-opacity"
+    />
+  </button>
+)}
     </div>
   );
 };

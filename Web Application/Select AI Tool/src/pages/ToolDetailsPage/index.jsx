@@ -404,7 +404,7 @@ if (!tool) {
         <footer className="bg-bg-primary-dark py-6 sm:py-12 lg:py-16" style={{ backgroundColor: "#172936"}}>
           <div className="max-w-[1728px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row justify-between items-start gap-8 lg:gap-12 mb-8">
- {/* Logo and Social Links */}
+         {/* Logo and Social Links */}
 <div className="flex flex-col items-center lg:items-start gap-7.5 w-full lg:w-auto">
   <img src="/images/img_footer_logo.png" alt="Select AI Tool" className="w-[236px] h-[130px]" />
   
@@ -518,33 +518,44 @@ if (!tool) {
             </div>
           </div>
         </footer>
-        {showScroll && (
+<style>
+{`
+  .scroll-to-top {
+    position: fixed;
+    bottom: 7rem;
+    right: 1.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  @media (max-width: 640px) {
+    .scroll-to-top {
+      bottom: 4.5rem;
+      right: 0.9rem;
+    }
+  }
+`}
+</style>
+
+{showScroll && (
   <button
-  onClick={scrollToTop}
-  style={{
-    position: "fixed",
-    bottom: "7rem",
-    right: "1.7rem",
-    // backgroundColor: "#4f46e5",
-    color: "#fff",
-    border: "none",
-    width: "50px",        // fixed width
-    height: "50px",       // fixed height
-    borderRadius: "50%",  // makes it a perfect circle
-    cursor: "pointer",
-    fontSize: "1.5rem",
-    display: "flex",      // center the icon
-    justifyContent: "center",
-    alignItems: "center",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-    transition: "transform 0.3s ease",
-    zIndex: 1000,
-  }}
-  onMouseEnter={(e) => (e.target.style.transform = "scale(1.2)")}
-  onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
->
-                      <img src="/images/img_group_275.svg" alt="Scroll to top" className="w-[46px] h-[46px] cursor-pointer hover:opacity-120 transition-opacity" />
-</button>
+    onClick={scrollToTop}
+    className="scroll-to-top"
+    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+  >
+    <img
+      src="/images/img_group_275.svg"
+      alt="Scroll to top"
+      className="w-[46px] h-[46px] cursor-pointer hover:opacity-120 transition-opacity"
+    />
+  </button>
 )}
     </div>
   );
