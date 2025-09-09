@@ -318,8 +318,10 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
         return (
           <button
             key={chip.id}
-            className={`px-3 py-1 rounded-full border ${
-              isSelected ? "bg-blue-500 text-white" : "bg-white text-black"
+            className={`px-4 py-2 rounded-full border text-sm font-medium transition ${
+              isSelected
+                ? "bg-[#A8FBFF] text-black border-black"
+                : "bg-white text-black border-gray-300 hover:bg-gray-100"
             }`}
             onClick={() => {
               let newSelected;
@@ -339,6 +341,7 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
     </div>
   );
 };
+
 
   return (
     <>
@@ -1006,104 +1009,105 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
     </div>
   ) : (
     aiTools.slice(0, visibleCount).map((tool) => (
-      <div
-        key={tool?.id}
-        className={`bg-bg-secondary-background border-2 ${
-          tool?.featured
-            ? 'border-border-accent shadow-[3px_4px_1px_#e5ac00]'
-            : 'border-border-primary shadow-[3px_4px_1px_#000000]'
-        } rounded-md px-6 py-8 cursor-pointer`}
-       onClick={() => navigate(`/tools/${tool._id}`)} // Use _id from MongoDB
-      >
-        {/* Tool Header */}
-        <div className="flex items-start gap-3 mb-3">
-          {tool.image_url && (
-            <img
-              src={tool.image_url}
-              alt={tool.name}
-              className="w-[70px] h-[70px] flex-shrink-0 rounded-lg"
-            />
-          )}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2 mb-1.5">
-              <h3 className="text-lg font-bold text-text-primary font-['Public_Sans'] leading-tight">
-                {tool?.name}
-              </h3>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <img src="/images/img_vector_amber_a400.svg" alt="" className="w-2.5 h-2.5" />
-                <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
-                  {tool?.rating}
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {tool.profession?.map((prof, i) => (
-                <Button
-                  key={i}
-                  text={prof}
-                  text_font_size="14"
-                  text_color="#000000"
-                  fill_background_color="#ffffff"
-                  border_border="1px solid #000000"
-                  border_border_radius="14px"
-                  effect_box_shadow="1px 2px 1px #000000"
-                  padding="4px 14px"
-                  layout_width="auto"
-                  position="relative"
-                  layout_gap="4px"
-                  margin="0"
-                  variant="secondary"
-                  size="small"
-                  onClick={() => {}}
-                  className="text-sm"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Tool Description */}
-        <p className="text-base font-medium text-text-muted font-['Public_Sans'] leading-normal mb-3">
-          {tool.new_description || tool.description}
-        </p>
-
-        {/* Tool Footer */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
-              {tool?.date}
-            </span>
-            <div className="w-1.25 h-1.25 bg-text-mutedMedium rounded-sm"></div>
-            <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
-              {tool?.pricing?.toLowerCase().includes("free") ? "100% Free" : tool?.pricing}
-            </span>
-          </div>
-
-          <Button
-            text="Visit Website"
-            text_font_size="14"
-            text_color="#ffffff"
-            fill_background_color="#0099ff"
-            border_border="2px solid #000000"
-            border_border_radius="6px"
-            effect_box_shadow="1px 2px 1px #000000"
-            padding="6px 20px"
-            layout_width="auto"
-            position="relative"
-            layout_gap="0"
-            margin="0"
-            variant="primary"
-            size="small"
-            onClick={() => {
-              window.open(tool?.link || tool?.official_link, "_blank", "noopener,noreferrer");
-              fetch(`${import.meta.env.VITE_API_URL}/api/tools/${tool._id}/visit`, {
-                method: "POST",
-              }).catch((err) => console.error("Error logging visit:", err));
-            }}
-            className="whitespace-nowrap leading-none"
-          />
+<div
+  key={tool?._id}
+  className={`bg-white border-2 ${
+    tool?.featured
+      ? 'border-border-accent shadow-[3px_4px_1px_#e5ac00]'
+      : 'border-border-primary shadow-[3px_4px_1px_#000000]'
+  } rounded-md px-6 py-8 cursor-pointer`}
+  onClick={() => navigate(`/tools/${tool._id}`)} // Use _id from MongoDB
+>
+  {/* Tool Header */}
+  <div className="flex items-start gap-3 mb-3">
+    {tool.image_url && (
+      <img
+        src={tool.image_url}
+        alt={tool.name}
+        className="w-[70px] h-[70px] flex-shrink-0 rounded-lg"
+      />
+    )}
+    <div className="flex-1 min-w-0">
+      <div className="flex items-start justify-between gap-2 mb-1.5">
+        <h3 className="text-lg font-bold text-text-primary font-['Public_Sans'] leading-tight">
+          {tool?.name}
+        </h3>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <img src="/images/img_vector_amber_a400.svg" alt="" className="w-2.5 h-2.5" />
+          <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
+            {tool?.rating}
+          </span>
         </div>
       </div>
+      <div className="flex flex-wrap gap-2">
+        {tool.profession?.map((prof, i) => (
+          <Button
+            key={i}
+            text={prof}
+            text_font_size="14"
+            text_color="#000000"
+            fill_background_color="#ffffff"
+            border_border="1px solid #000000"
+            border_border_radius="14px"
+            effect_box_shadow="1px 2px 1px #000000"
+            padding="4px 14px"
+            layout_width="auto"
+            position="relative"
+            layout_gap="4px"
+            margin="0"
+            variant="secondary"
+            size="small"
+            onClick={() => {}}
+            className="text-sm"
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+
+  {/* Tool Description */}
+  <p className="text-base font-medium text-text-muted font-['Public_Sans'] leading-normal mb-3">
+    {tool.new_description || tool.description}
+  </p>
+
+  {/* Tool Footer */}
+  <div className="flex items-center justify-between">
+    <div className="flex items-center gap-2.5">
+      <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
+        {tool?.date}
+      </span>
+      <div className="w-1.25 h-1.25 bg-text-mutedMedium rounded-sm"></div>
+      <span className="text-sm font-medium text-text-muted font-['Public_Sans']">
+        {tool?.pricing?.toLowerCase().includes("free") ? "100% Free" : tool?.pricing}
+      </span>
+    </div>
+
+    <Button
+      text="Visit Website"
+      text_font_size="14"
+      text_color="#ffffff"
+      fill_background_color="#0099ff"
+      border_border="2px solid #000000"
+      border_border_radius="6px"
+      effect_box_shadow="1px 2px 1px #000000"
+      padding="6px 20px"
+      layout_width="auto"
+      position="relative"
+      layout_gap="0"
+      margin="0"
+      variant="primary"
+      size="small"
+      onClick={() => {
+        window.open(tool?.link || tool?.official_link, "_blank", "noopener,noreferrer");
+        fetch(`${import.meta.env.VITE_API_URL}/api/tools/${tool._id}/visit`, {
+          method: "POST",
+        }).catch((err) => console.error("Error logging visit:", err));
+      }}
+      className="whitespace-nowrap leading-none"
+    />
+  </div>
+</div>
+
     ))
   )}
 </div>
@@ -1255,34 +1259,46 @@ onClick={() => handleFilterClick(true)} // <-- pass true to filter featured     
             </div>
           </div>
         </footer>
-        {showScroll && (
+<style>
+{`
+  .scroll-to-top {
+    position: fixed;
+    bottom: 7rem;
+    right: 1.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  @media (max-width: 640px) {
+    .scroll-to-top {
+      bottom: 3rem;
+      right: 1rem;
+    }
+  }
+`}
+</style>
+
+{showScroll && (
   <button
-  onClick={scrollToTop}
-  style={{
-    position: "fixed",
-    bottom: "7rem",
-    right: "1.7rem",
-    // backgroundColor: "#4f46e5",
-    color: "#fff",
-    border: "none",
-    width: "50px",        // fixed width
-    height: "50px",       // fixed height
-    borderRadius: "50%",  // makes it a perfect circle
-    cursor: "pointer",
-    fontSize: "1.5rem",
-    display: "flex",      // center the icon
-    justifyContent: "center",
-    alignItems: "center",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-    transition: "transform 0.3s ease",
-    zIndex: 1000,
-  }}
-  onMouseEnter={(e) => (e.target.style.transform = "scale(1.2)")}
-  onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
->
-                      <img src="/images/img_group_275.svg" alt="Scroll to top" className="w-[46px] h-[46px] cursor-pointer hover:opacity-120 transition-opacity" />
-</button>
+    onClick={scrollToTop}
+    className="scroll-to-top"
+    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+  >
+    <img
+      src="/images/img_group_275.svg"
+      alt="Scroll to top"
+      className="w-[46px] h-[46px] cursor-pointer hover:opacity-120 transition-opacity"
+    />
+  </button>
 )}
+
 
       </main>
     </>
