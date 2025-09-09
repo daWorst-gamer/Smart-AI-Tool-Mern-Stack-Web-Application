@@ -700,9 +700,10 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
 
         {/* Hero Content */}
 <div className="text-center mb-20 sticky top-0 z-40 px-4 py-4 sm:py-6">
-  <h1 className="text-[20px] sm:text-[28px] md:text-[36px] lg:text-[48px] xl:text-[56px] 
-                 font-extrabold text-white font-['Lexend_Mega'] leading-snug sm:leading-tight 
-                 mb-3 sm:mb-5 lg:mb-8 xl:mb-10 text-center">
+  <h1 className="text-[28px] sm:text-[28px] md:text-[36px] lg:text-[48px] xl:text-[56px] 
+                 font-extrabold text-white font-['Lexend_Mega'] 
+                 leading-[1.3] sm:leading-[1.2] lg:leading-tight
+                 mb-3 lg:mb-12 text-center">
     A Curated List For The Best AI Tools
   </h1>
   <div className="max-w-4xl mx-auto">
@@ -718,6 +719,7 @@ const ChipView = ({ chips, selectedChips, onChipClick, multiSelect }) => {
     </p>
   </div>
 </div>
+
 
       </div>
 
