@@ -301,8 +301,9 @@ const handleSubmit = (e) => {
             </div>
 
             {/* Footer Bottom */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-5">
+             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-5">
               <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+              <Link to="/">
                 <Button
                   text="View All Tools"
                   text_font_size="16"
@@ -320,6 +321,9 @@ const handleSubmit = (e) => {
                   size="small"
                   onClick={() => {}}
                 />
+                </Link>
+
+                <Link to="/ebook">
                 <Button
                   text="View All Ebooks"
                   text_font_size="16"
@@ -337,6 +341,7 @@ const handleSubmit = (e) => {
                   size="small"
                   onClick={() => {}}
                 />
+                </Link>
               </div>
               {/* <img src="/images/img_group_275.svg" alt="Scroll to top" className="w-[46px] h-[46px] cursor-pointer hover:opacity-80 transition-opacity" /> */}
             </div>

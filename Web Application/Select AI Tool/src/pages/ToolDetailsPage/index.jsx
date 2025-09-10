@@ -469,46 +469,50 @@ if (!tool) {
             </div>
 
             {/* Footer Bottom */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-5">
-              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
-                <Button
-                  text="View All Tools"
-                  text_font_size="16"
-                  text_color="#ffffff"
-                  fill_background_color="#0099ff"
-                  border_border="1px solid #b7b7b7"
-                  border_border_radius="3px"
-                  effect_box_shadow="1px 2px 1px #b8b8b8"
-                  padding="8px 20px"
-                  layout_width="auto"
-                  position="relative"
-                  layout_gap="8px"
-                  margin="0"
-                  variant="primary"
-                  size="small"
-                  onClick={() => {}}
-                />
-                <Button
-                  text="View All Ebooks"
-                  text_font_size="16"
-                  text_color="#ffffff"
-                  fill_background_color="#0099ff"
-                  border_border="1px solid #b7b7b7"
-                  border_border_radius="3px"
-                  effect_box_shadow="1px 2px 1px #b8b8b8"
-                  padding="8px 22px"
-                  layout_width="auto"
-                  position="relative"
-                  layout_gap="8px"
-                  margin="0"
-                  variant="primary"
-                  size="small"
-                  onClick={() => {}}
-                />
-              </div>
-              {/* <img src="/images/img_group_275.svg" alt="Scroll to top" className="w-[46px] h-[46px] cursor-pointer hover:opacity-80 transition-opacity" /> */}
-            </div>
-
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-5">
+                      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+                      <Link to="/">
+                        <Button
+                          text="View All Tools"
+                          text_font_size="16"
+                          text_color="#ffffff"
+                          fill_background_color="#0099ff"
+                          border_border="1px solid #b7b7b7"
+                          border_border_radius="3px"
+                          effect_box_shadow="1px 2px 1px #b8b8b8"
+                          padding="8px 20px"
+                          layout_width="auto"
+                          position="relative"
+                          layout_gap="8px"
+                          margin="0"
+                          variant="primary"
+                          size="small"
+                          onClick={() => {}}
+                        />
+                        </Link>
+        
+                        <Link to="/ebook">
+                        <Button
+                          text="View All Ebooks"
+                          text_font_size="16"
+                          text_color="#ffffff"
+                          fill_background_color="#0099ff"
+                          border_border="1px solid #b7b7b7"
+                          border_border_radius="3px"
+                          effect_box_shadow="1px 2px 1px #b8b8b8"
+                          padding="8px 22px"
+                          layout_width="auto"
+                          position="relative"
+                          layout_gap="8px"
+                          margin="0"
+                          variant="primary"
+                          size="small"
+                          onClick={() => {}}
+                        />
+                        </Link>
+                      </div>
+                      {/* <img src="/images/img_group_275.svg" alt="Scroll to top" className="w-[46px] h-[46px] cursor-pointer hover:opacity-80 transition-opacity" /> */}
+                    </div>
             {/* Divider */}
             <div className="w-full h-px bg-bg-secondary-light my-5"></div>
 
