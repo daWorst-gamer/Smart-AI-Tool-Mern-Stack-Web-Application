@@ -100,21 +100,22 @@ const NotFound = () => {
   success={success}
 />
         <section className="flex flex-col items-center justify-center min-h-screen text-center px-4 sm:px-6 lg:px-8">
-          <h1
-            className="text-gray-900 mb-4"
-            style={{
-              fontFamily: 'Lexend Mega',
-              fontWeight: 800,
-              fontStyle: 'normal',
-              fontSize: '200px',
-              lineHeight: '140%',
-              letterSpacing: '-10%',
-              textTransform: 'capitalize',
-              color: "#33333399",
-            }}
-          >
-            404
-          </h1>
+     <h1
+  className="text-gray-900 mb-4 -mt-40"
+  style={{
+    fontFamily: 'Lexend Mega',
+    fontWeight: 800,
+    fontStyle: 'normal',
+    fontSize: '200px',
+    lineHeight: '140%',
+    letterSpacing: '-10%',
+    textTransform: 'capitalize',
+    color: "#33333399",
+  }}
+>
+  404
+</h1>
+
 
           <h2
             className="mb-6"
