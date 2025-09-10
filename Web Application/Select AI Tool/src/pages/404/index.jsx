@@ -6,7 +6,68 @@ import Header from "../../components/header";
 import Button from '../../components/ui/Button';
 
 const NotFound = () => {
-  const [showScroll, setShowScroll] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formErrors, setFormErrors] = useState({});
+  const [success, setSuccess] = useState(false);
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.name.trim()) errors.name = "Full Name is required";
+    if (!formData.email) errors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Email is invalid";
+    if (!formData.message.trim()) errors.message = "Message is required";
+    return errors;
+  };
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const errors = validateForm();
+    if (Object.keys(errors).length === 0) {
+      setSuccess(true);
+      setFormData({ name: "", email: "", message: "" });
+      setTimeout(() => setSuccess(false), 3000);
+    } else {
+      setFormErrors(errors);
+    }
+  };
+      const [showScroll, setShowScroll] = useState(false);
+    useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScroll(true);
+      } else {
+        setShowScroll(false);
+      }
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  
+     useEffect(() => {
+      const script = document.createElement("script");
+      script.src = "//code.tidio.co/0cod26pfb62euct6ob89ysu1c5j2u5jf.js";
+      script.async = true;
+      document.body.appendChild(script);
+  
+      return () => {
+        document.body.removeChild(script); // Clean up on unmount
+      };
+    }, []);
+  
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [freeMode, setFreeMode] = useState(false); // <-- toggle state
+  
+ 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,8 +77,6 @@ const NotFound = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-
   return (
     <>
       <Helmet>
@@ -26,8 +85,20 @@ const NotFound = () => {
       </Helmet>
 
       <main className="min-h-screen bg-gray-50">
-        <Header />
-
+        {/* Header Section */}
+      <Header
+  modalOpen={modalOpen}
+  setModalOpen={setModalOpen}
+  freeMode={freeMode}
+  setFreeMode={setFreeMode}
+  menuOpen={menuOpen}
+  setMenuOpen={setMenuOpen}
+  handleSubmit={handleSubmit}
+  formData={formData}
+  handleInputChange={handleInputChange}
+  formErrors={formErrors}
+  success={success}
+/>
         <section className="flex flex-col items-center justify-center min-h-screen text-center px-4 sm:px-6 lg:px-8">
           <h1
             className="text-gray-900 mb-4"
