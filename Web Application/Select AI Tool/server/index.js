@@ -303,7 +303,7 @@ app.post("/api/send-email", async (req, res) => {
 
 const mailOptions = {
   from: `"${name}" <${email}>`,
-  to: process.env.GMAIL_USER,
+  to: process.env.recipient_email,
   subject: `New Contact Form Submission from ${name}`,
   text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
   html: `
